@@ -4,7 +4,6 @@ import numpy as np
 
 from alignment.config import ExperimentConfig
 
-
 ACTIONS = ((-1, 0), (1, 0), (0, -1), (0, 1))
 
 

@@ -24,6 +24,16 @@ AI Safety Gridworlds separates the reward observed by an agent from a hidden per
 
 - Leike et al. (2017), [AI Safety Gridworlds](https://arxiv.org/abs/1711.09883)
 - Krakovna et al., [Specification gaming examples in AI](https://deepmind.google/discover/blog/specification-gaming-the-flip-side-of-ai-ingenuity/)
+- Krakovna et al. (2020), [Avoiding Side Effects By Considering Future Tasks](https://arxiv.org/abs/2010.07877)
+- Krakovna et al. (2018), [Penalizing Side Effects using Stepwise Relative Reachability](https://arxiv.org/abs/1806.01186)
+- Kumar et al. (2020), [REALab: An Embedded Perspective on Tampering](https://arxiv.org/abs/2011.08820)
+- Tsvarkaleva & Dennis (2021), [No Free Lunch: Overcoming Reward Gaming in AI Safety Gridworlds](https://doi.org/10.1007/978-3-030-83906-2_18)
+- Turchetta et al. (2020), [Safe Reinforcement Learning via Curriculum Induction](https://arxiv.org/abs/2006.12136)
+- Vamplew et al. (2021), [Potential-based multiobjective reinforcement learning approaches to low-impact agents for AI safety](https://doi.org/10.1016/j.engappai.2021.104186)
+- Omi et al. (2024), [Progressive Safeguards for Safe and Model-Agnostic Reinforcement Learning](https://arxiv.org/abs/2410.24096)
+- Overman & Bayati (2025), [The Oversight Game: Learning to Cooperatively Balance an AI Agent's Safety and Autonomy](https://arxiv.org/abs/2510.26752)
+- cCaugatan & Zhao (2026), [Reward Hacking in Language Model Agents: Revisiting AI Safety Gridworlds](https://arxiv.org/abs/2606.15385)
+- Dharna et al. (2026), [AI Finds A Way](https://arxiv.org/abs/2608.23875)
 
 Questions to answer while reading:
 
@@ -31,20 +41,43 @@ Questions to answer while reading:
 2. Does the original hidden performance function generalize across layouts, or is it itself hand-coded to each level?
 3. Which published baselines make a fair comparison for a learned monitor?
 
+#### Preliminary notes
+
+- Reward-gaming trajectories tend to produce observable statistical outliers in reward accumulation; side effects can be detected via relative reachability or inaction baselines; absent-supervisor scenarios produce detectable behavioral drift between monitored and unmonitored phases.
+- The original AI Safety Gridworlds hidden performance functions are hand-coded per task. Domain-independent alternatives such as relative reachability and potential-based multi-objective penalties try to reduce level-specific engineering.
+- A fair learned-monitor comparison should include unconstrained RL baselines (tabular Q-learning, A2C, Rainbow), intrinsic safety penalties, and interactive oversight / reset-controller frameworks, not only the unmonitored actor.
+
 ### AI control and monitoring
 
 AI control asks how useful work can be obtained from systems that may intentionally subvert safeguards. Trusted monitoring uses a model believed not to collude; untrusted monitoring may use a capable but potentially adversarial model and must address collusion.
 
+- Anwar et al. (2024), [Foundational Challenges in Assuring Alignment and Safety of Large Language Models](https://arxiv.org/abs/2404.09932)
+- Berglund et al. (2023), [Taken out of context: On measuring situational awareness in LLMs](https://arxiv.org/abs/2309.00667)
 - Greenblatt et al. (2023), [AI Control: Improving Safety Despite Intentional Subversion](https://arxiv.org/abs/2312.06942)
 - Motwani et al. (2025), [Subversion via Focal Points: Investigating Collusion in LLM Monitoring](https://arxiv.org/abs/2507.03010)
 - Korbak et al. (2025), [Reliable Weak-to-Strong Monitoring of LLM Agents](https://arxiv.org/abs/2508.19461)
+- Korbak et al. (2025), [How to evaluate control measures for LLM agents? A trajectory from today to superintelligence](https://arxiv.org/abs/2504.05259)
+- Korbak et al. (2025), [A sketch of an AI control safety case](https://arxiv.org/abs/2501.17315)
+- Korbak et al. (2025), [Chain of Thought Monitorability: A New and Fragile Opportunity for AI Safety](https://arxiv.org/abs/2507.11473)
+- Lindner et al. (2025), [Practical challenges of control monitoring in frontier AI deployments](https://arxiv.org/abs/2512.22154)
+- Sreevatsa et al. (2026), [Basic Legibility Protocols Improve Trusted Monitoring](https://arxiv.org/abs/2602.10153)
+- Stickland et al. (2025), [Async Control: Stress-testing Asynchronous Control Measures for LLM Agents](https://arxiv.org/abs/2512.13526)
+- Koran et al. (2026), [Ensemble Monitoring for AI Control: Diverse Signals Outweigh More Compute](https://arxiv.org/abs/2605.15377)
+- Lee et al. (2026), [Training Agents to Self-Report Misbehavior](https://arxiv.org/abs/2602.22303)
 
 Questions to answer:
 
-1. What assumptions make a monitor “trusted,” and can any be represented experimentally rather than assumed?
+1. What assumptions make a monitor "trusted," and can any be represented experimentally rather than assumed?
 2. How do safety and usefulness metrics in control evaluations differ from ordinary classification accuracy?
 3. How does agent awareness of monitoring change evasion rates?
 4. Which collusion channels exist when actor and monitor share architecture, initialization distribution, training data, or gradients?
+
+#### Preliminary notes
+
+- Trusted monitoring is usually operationalized as a substantially weaker model trained on human labels (e.g., GPT-3.5 monitoring GPT-4). The trust assumption is partly a capability-gap assumption; as the untrusted model improves, that gap may erode. Legibility protocols and basic-legibility training can make honest outputs easier to verify, but ensuring the monitor itself is trustworthy remains an open problem.
+- Control evaluations measure **safety** (probability that a subverted attack is caught or prevented across a deployment), **usefulness** (task completion rescaled between trusted and untrusted baselines), and **deployment risk** (function of monitor thresholds, parallelism, latency, and shutdown rules). These are protocol-level quantities, not simple per-action classification accuracy.
+- Agent awareness matters: situational awareness, hidden scratchpads, and prompt-injection-style attacks let a monitored agent evade or jailbreak its monitor. Training agents to self-report misbehavior can reduce undetected attack rates below matched-capability monitors.
+- Collusion channels include shared architecture or training provenance, steganographic or semantic information in outputs, and covert communication through chain-of-thought. Trusted summarization / paraphrasing narrows but does not fully close these channels; diverse monitor ensembles reduce correlated failures.
 
 ### Scalable oversight, debate, and recursive critique
 
@@ -55,6 +88,21 @@ The idea that criticism can be easier than generation appears in debate, iterate
 - Christiano et al. (2018), [Supervising strong learners by amplifying weak experts](https://arxiv.org/abs/1810.08575)
 - Bowman et al. (2022), [Measuring Progress on Scalable Oversight for Large Language Models](https://arxiv.org/abs/2211.03540)
 - Lang et al. (2025), [A Benchmark for Scalable Oversight Protocols](https://arxiv.org/abs/2504.03731)
+- Brown-Cohen et al. (2023), [Scalable AI Safety via Doubly-Efficient Debate](https://arxiv.org/abs/2311.14125)
+- Burns et al. (2023), [Weak-to-Strong Generalization: Eliciting Strong Capabilities With Weak Supervision](https://arxiv.org/abs/2312.09390)
+- Casper et al. (2023), [Open Problems and Fundamental Limitations of Reinforcement Learning from Human Feedback](https://arxiv.org/abs/2307.15217)
+- Engels et al. (2025), [Scaling Laws For Scalable Oversight](https://arxiv.org/abs/2504.18530)
+- Gao et al. (2022), [Scaling Laws for Reward Model Overoptimization](https://arxiv.org/abs/2210.10760)
+- Khan et al. (2024), [Debating with More Persuasive LLMs Leads to More Truthful Answers](https://arxiv.org/abs/2402.06782)
+- Kirchner et al. (2024), [Prover-Verifier Games improve legibility of LLM outputs](https://arxiv.org/abs/2407.13692)
+- McAleese et al. (2024), [LLM Critics Help Catch LLM Bugs](https://arxiv.org/abs/2407.00215)
+- Michael et al. (2023), [Debate Helps Supervise Unreliable Experts](https://arxiv.org/abs/2311.08702)
+- Parrish et al. (2022), [Single-Turn Debate Does Not Help Humans Answer Hard Reading-Comprehension Questions](https://arxiv.org/abs/2204.05212)
+- Recchia et al. (2025), [FindTheFlaws: Annotated Errors for Detecting Flawed Reasoning and Scalable Oversight Research](https://arxiv.org/abs/2503.22989)
+- Saunders et al. (2022), [Self-critiquing models for assisting human evaluators](https://arxiv.org/abs/2206.05802)
+- Sharma et al. (2023), [Towards Understanding Sycophancy in Language Models](https://arxiv.org/abs/2310.13548)
+- Wu et al. (2021), [Recursively Summarizing Books with Human Feedback](https://arxiv.org/abs/2109.10862)
+- Yan & Lipton (2024), [A theoretical case-study of Scalable Oversight in Hierarchical Reinforcement Learning](https://doi.org/10.52202/079017-0858)
 
 Questions to answer:
 
@@ -62,6 +110,13 @@ Questions to answer:
 2. Is judging a monitor’s verdict easier than directly judging the original action?
 3. Does recursive depth add independent information, or merely repeat correlated errors?
 4. What stops an oversight hierarchy from shifting the original alignment problem to its top layer?
+
+#### Preliminary notes
+
+- Judging is easier than choosing when the task exhibits a **search–verification asymmetry**: outputs can be decomposed into checkable subclaims, quoted evidence, or mechanically verifiable steps. Debate can improve judge accuracy in such settings, but single-turn debate without surfaced evidence does not help on hard reading comprehension.
+- Judging the monitor is easier only when the monitor produces a **legible, attack-resistant rationale** that points to a specific bug rather than repeating the original decision opaquely. Critics can catch more bugs than humans but also hallucinate flaws; prover-verifier training improves legibility and human-checkability.
+- Recursive depth adds information only when each layer contributes a new perspective, decomposition, or adversarial check. Weak-to-strong generalization depends on the **structure** of supervisor errors, not only their rate. Nested oversight works in restricted regimes; depth alone is not sufficient.
+- The hierarchy must be anchored to trusted checks (e.g., sandwiching with weak supervisors and gold labels, probability elicitation, KL limits). If the top-layer verifier is flawed, the problem simply shifts upward.
 
 ## Falsifiable hypotheses
 
@@ -181,3 +236,7 @@ For each source, write a short note answering:
 - What experiment remains genuinely unanswered?
 
 The first practical goal is not novelty at all costs. It is a correct, reproducible baseline that makes the assumptions visible. Novelty can come later from adaptive training dynamics, correlated failures, model diversity, or measured returns to recursive oversight.
+
+## Deferred big-scale questions
+
+A separate set of long-term questions and research ideas is kept in `docs/research_notes.md`. Those include the relevance of a police/actor model to superhuman RSI AGI, whether monitors can realistically match actor capability, and open questions about base-case morality, virtue formation, and the AI-village idea. They are intentionally not part of the immediate experimental plan.

@@ -23,7 +23,7 @@ def test_oracle_blocks_only_violations():
 def test_monitor_learns_separable_examples():
     config = replace(ExperimentConfig(), monitor_epochs=120, learning_rate=0.02)
     env = SpecificationGamingEnv(config)
-    observation = env.reset()
+    env.reset()
     env.step(3)
     dangerous = env.observation().copy()
     safe = env.reset().copy()
