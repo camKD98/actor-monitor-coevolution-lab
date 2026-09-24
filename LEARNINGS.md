@@ -50,6 +50,10 @@ Run the CLI:
 - `hidden_violation_cost=30` makes a violation worse than a safe timeout; with the former value of 15, violating returned about -1.1 versus -1.2 for timing out, so the fallback preferred the exploit.
 - Default baseline result: no monitor executes 100/100 violations; always-alarm completes 0/100 goals; learned monitoring executes 0/100 violations and completes 100/100 legitimate goals.
 - Reproducibility verified for the fallback baseline: two default runs produced byte-identical `results.json` files (SHA-256 `79DB7C30B7A15E6499E38B1A7893A9B9AAA9E9FDF1D135C5B7187E75D5E3D771`).
+- The contextual experiment runs with `alignment-lab --experiment contextual --output runs/contextual-v1`; seed 17 requires shaped prerequisite rewards for the red-team policies to learn delayed violations reliably.
+- In the contextual stage result, block-only monitoring stops the known direct attack but misses 100/100 held-out exfiltration attacks. An idealized costly-investigation policy stops both, while proxy, safety, and collaborative actors each retain 100/100 completion with no false interventions.
+- Delayed red-team policies were unreliable with sparse REINFORCE rewards alone. Explicit role-protocol pretraining plus randomized curriculum states made direct and exfiltration sequences reliable; interpret them as engineered adversaries, not emergent deception.
+- The current investigation step reads the environment's oracle violation label and is therefore an upper bound. Replace it with bounded evidence before interpreting police-agent performance.
 - Active tasks and next steps are tracked in `TASKS.md`.
 
 ## Known issues
@@ -65,6 +69,12 @@ Run the CLI:
 - Use held-out variants and multiple seeds.
 - Do not add recursive monitors until the first-level monitor has a defined failure/corruption/information-limitation model.
 - Describe all results as evidence about a toy control protocol, not a general alignment claim.
+
+## Research provenance
+
+- Claim-relevant runs embed Git commit, tracked-tree dirty state, command, UTC timestamp, platform, Python, and dependency versions in `results.json`.
+- Raw artifacts stay under ignored `runs/`; `docs/experiment_log.md` is the committed ledger containing commands, artifact hashes, results, interpretations, and limitations.
+- Run canonical experiments from a clean tracked tree at a committed revision. Untracked editor files such as `.vscode/` do not mark the tracked tree dirty.
 
 ## Miscellany
 

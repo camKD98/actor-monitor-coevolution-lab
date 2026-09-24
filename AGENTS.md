@@ -22,6 +22,26 @@ Do not begin recursive oversight by stacking identical monitors. A deeper layer 
 - Do not push unless explicitly asked.
 - Do not include secrets, API keys, or raw run outputs in commits.
 
+## Research run provenance
+
+Treat this repository as the basis of a future research paper. Any result used to guide development or support a claim must be reproducible after scripts evolve.
+
+- Run claim-relevant experiments from a committed code state whenever possible. Do not silently treat exploratory dirty-tree runs as canonical.
+- Every saved run must record the Git commit, tracked-tree dirty state, exact command, UTC timestamp, Python version, dependency versions, seed, and complete configuration.
+- Keep raw artifacts under ignored `runs/` directories; do not commit model weights or bulk raw outputs.
+- Maintain `docs/experiment_log.md` as the committed experiment ledger. For each relevant run, record:
+  - a stable run ID and purpose;
+  - code commit and tracked-tree state;
+  - exact command and working directory;
+  - artifact location and `results.json` SHA-256;
+  - configuration/seeds and train/validation/evaluation split details;
+  - key quantitative results;
+  - what the result supports and does not support;
+  - known confounders, failures, and follow-up decisions.
+- If a result was produced before provenance capture or from a dirty tree, label it exploratory and rerun from a clean commit before citing it as canonical.
+- Never overwrite a canonical run directory. Use a new run ID for reruns or changed code/configuration.
+- Paper tables and plots must be generated from logged artifacts whose hashes match the ledger, not from remembered or manually transcribed values.
+
 ## Task scoping and handoff
 
 - Keep agent runs scoped to a specific task. Use `TASKS.md` to track status, blockers, and next steps.

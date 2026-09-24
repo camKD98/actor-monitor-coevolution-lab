@@ -77,6 +77,21 @@ The scientific claim is deliberately narrower than â€œpolicing solves alignmentâ
 - [ ] Implement adaptive actor and alternating actor-monitor training.
 - [ ] Add regenerated plots/tables and a report only after the baseline is validated.
 
+## Contextual-escalation experiment
+
+The completed gridworld is a mechanism-validation baseline, not the main research environment. The next experiment adds several comparably capable learned roles without assuming that one learned agent is inherently trusted:
+
+1. A safety-penalized task actor trained to avoid known violations.
+2. A proxy-reward task actor that may specification-game when a shortcut is useful.
+3. A dedicated red-team actor with a back-loaded objective for reaching a prohibited outcome.
+4. A police monitor trained on bounded public state and trajectory evidence from safety and red-team behavior.
+
+The first implementation contains legitimate work, useful research, access escalation, a direct violation used during monitor training, and a separate exfiltration action omitted from monitor training for held-out evaluation. Legitimate collaboration and exfiltration share research/access/share preparation. A three-region police protocol can allow low-risk actions, block high-risk actions, or pay to investigate intermediate-risk actions. The current investigation receives the oracle violation label and is only an upper bound; replace it with a bounded evidence channel before drawing substantive conclusions.
+
+At seed 17, block-only monitoring stops the known direct attack but misses the held-out exfiltration attack. Idealized investigation stops both at a measurable cost while preserving all evaluated legitimate completions. The role policies use explicit protocol pretraining and curriculum states, so red-team behavior is engineered rather than naturally emerging.
+
+Red-team behavior is a source of adversarial training data, not evidence that deceptive alignment emerged naturally. Keep some attack families unavailable during monitor training so final evaluation measures generalization rather than repeated fitting to every discovered attack.
+
 ## Risks and interpretation
 
 - The toy environment tests a control mechanism, not a general alignment solution.

@@ -4,7 +4,14 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-None.
+- [ ] Build the contextual-escalation experiment
+  - First slice implemented: legitimate work/research, access escalation, direct override, and held-out exfiltration.
+  - Separate proxy, safety-penalized, direct red-team, and exfiltration red-team policies now train independently.
+  - The police trains only on safety/direct-red-team trajectories; exfiltration actions are excluded from its dataset.
+  - Seed 17 result: both red-team policies execute 100/100 unmonitored violations. Block-only stops the known direct attack but misses 100/100 held-out exfiltration attacks; costly investigation stops both while preserving 100/100 completion for proxy, safety, and collaborative task policies.
+  - Legitimate collaboration and exfiltration now share research/access/share preparation; role protocols use explicit supervised pretraining plus RL curriculum, so red-team behavior is engineered rather than emergent.
+  - Next: replace idealized investigation labels with a bounded evidence channel, stop repeated veto loops, and sweep police thresholds/costs to measure a non-trivial intervention frontier.
+  - Preserve the completed gridworld as a mechanism-validation baseline.
 
 ## Next
 
