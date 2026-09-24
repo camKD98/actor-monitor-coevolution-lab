@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adversarial-oversight-lab"
+version = "0.1.0"
+description = "A small reinforcement-learning experiment in adversarial oversight"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26,<3",
+  "torch>=2.2,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+  "ruff>=0.6,<1",
+]
+
+[project.scripts]
+alignment-lab = "alignment.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
