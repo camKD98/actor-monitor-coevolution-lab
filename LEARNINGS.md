@@ -53,7 +53,8 @@ Run the CLI:
 - The contextual experiment runs with `alignment-lab --experiment contextual --output runs/contextual-v1`; seed 17 requires shaped prerequisite rewards for the red-team policies to learn delayed violations reliably.
 - In the contextual stage result, block-only monitoring stops the known direct attack but misses 100/100 held-out exfiltration attacks. An idealized costly-investigation policy stops both, while proxy, safety, and collaborative actors each retain 100/100 completion with no false interventions.
 - Delayed red-team policies were unreliable with sparse REINFORCE rewards alone. Explicit role-protocol pretraining plus randomized curriculum states made direct and exfiltration sequences reliable; interpret them as engineered adversaries, not emergent deception.
-- The current investigation step reads the environment's oracle violation label and is therefore an upper bound. Replace it with bounded evidence before interpreting police-agent performance.
+- Bounded investigation now uses explicit authorization evidence (access granted, privileged mutation, external transfer, elevated-scope authorization) rather than the hidden violation label. It remains a hand-coded evidence/adjudication channel, not a learned investigator.
+- Confirmed contextual violations quarantine the actor, preventing repeated veto/investigation loops. In the exploratory seed-17 rerun this reduced direct/exfiltration interventions from 800/700 to 100 each and investigation cost from 80/70 to 10/10.
 - Active tasks and next steps are tracked in `TASKS.md`.
 
 ## Known issues

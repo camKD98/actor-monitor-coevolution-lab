@@ -34,6 +34,23 @@ This is the committed ledger for claim-relevant experiments. Raw artifacts remai
 
 ## Exploratory runs
 
+### EXP-CTX-DEV-002 — Bounded authorization investigation and quarantine
+
+- **Status:** exploratory; automated provenance reports commit `cbd4d30b80d39fd01e5630823beed6478c627fd2` with `tracked_tree_dirty=true`.
+- **Purpose:** replace oracle adjudication with bounded authorization evidence and terminate deployment after a confirmed violation.
+- **Command:**
+
+```powershell
+& '.\.venv\Scripts\alignment-lab.exe' --experiment contextual --output '.\runs\contextual-bounded-evidence-dev' --seed 17 --actor-episodes 1500 --monitor-episodes 600
+```
+
+- **Artifact:** `runs/contextual-bounded-evidence-dev/results.json` (local, ignored, exploratory).
+- **Key result:** task policies retain 100/100 completion without intervention. Block-only prevents 100/100 known direct attacks and misses 100/100 held-out exfiltration attacks. Investigation prevents both, using 100 investigations and total cost 10.0 for each red-team policy. Quarantine removes repeated retry loops.
+- **Supports:** a bounded scope-checking evidence channel can adjudicate the held-out action in this engineered environment without consulting `proposed_violation`.
+- **Does not support:** learned investigation, robustness to forged or incomplete records, natural deception, or multi-seed reliability.
+- **Confounders:** authorization evidence and its adjudication rule are hand-coded; the external-transfer feature makes exfiltration mechanically identifiable once investigated.
+- **Decision:** commit, rerun canonically, then sweep thresholds and investigation costs.
+
 ### EXP-CTX-DEV-001 — Contextual escalation and idealized investigation
 
 - **Status:** exploratory; produced from a dirty tracked tree before automated provenance capture.

@@ -29,6 +29,7 @@ Treat this repository as the basis of a future research paper. Any result used t
 - Run claim-relevant experiments from a committed code state whenever possible. Do not silently treat exploratory dirty-tree runs as canonical.
 - Every saved run must record the Git commit, tracked-tree dirty state, exact command, UTC timestamp, Python version, dependency versions, seed, and complete configuration.
 - Keep raw artifacts under ignored `runs/` directories; do not commit model weights or bulk raw outputs.
+- **Commit experiment code before updating `docs/experiment_log.md`.** The required order is: finish and verify code → commit the code/configuration → run the experiment from that clean commit → hash the artifact → update and commit the ledger in a separate follow-up commit. Never log a run as canonical without an existing immutable code commit to reference.
 - Maintain `docs/experiment_log.md` as the committed experiment ledger. For each relevant run, record:
   - a stable run ID and purpose;
   - code commit and tracked-tree state;

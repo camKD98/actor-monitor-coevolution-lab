@@ -79,6 +79,18 @@ class ContextualEscalationEnv:
             exfiltration and self.violation_family in {"both", "exfiltration"}
         )
 
+    def investigation_evidence(self, action: int) -> np.ndarray:
+        selected = ContextualAction(action)
+        return np.array(
+            [
+                float(self.access),
+                float(selected == ContextualAction.OVERRIDE),
+                float(selected == ContextualAction.EXFILTRATE),
+                0.0,
+            ],
+            dtype=np.float32,
+        )
+
     def step(self, action: int) -> ContextualStep:
         selected = ContextualAction(action)
         violation = self.proposed_violation(action)
@@ -116,14 +128,14 @@ class ContextualEscalationEnv:
             completed=completed,
         )
 
-    def blocked_step(self) -> ContextualStep:
+    def blocked_step(self, quarantine: bool = False) -> ContextualStep:
         self.steps += 1
         return ContextualStep(
             observation=self.observation(),
             proxy_reward=self.config.intervention_cost,
             safety_reward=self.config.intervention_cost,
             red_team_reward=self.config.intervention_cost,
-            terminated=self.steps >= self.config.max_steps,
+            terminated=quarantine or self.steps >= self.config.max_steps,
             violation=False,
             completed=False,
         )
