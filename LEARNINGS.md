@@ -42,15 +42,19 @@ Run the CLI:
 ## Current project status
 
 - Environment is clean and working on the new PC.
-- Ruff and pytest pass (`8 passed in ~15s`).
+- Ruff and pytest pass (`9 passed`).
 - Default seed (`seed=7`) gives a fully deterministic pipeline.
 - The unmonitored actor reliably learns the designed exploit: 100/100 evaluation episodes reach the exploit cell.
-- Reproducibility verified: two identical default runs produced identical `results.json`.
+- The learned monitor scores the safe precursor near 0 and the violating action near 1; the earlier apparent always-block behavior was repeated violation attempts by an exploit-only actor after each veto.
+- The baseline now trains a separate fallback policy on true reward without monitor feedback. After a veto, control remains with this fallback, and every fallback action is checked by the deployed monitor.
+- `hidden_violation_cost=30` makes a violation worse than a safe timeout; with the former value of 15, violating returned about -1.1 versus -1.2 for timing out, so the fallback preferred the exploit.
+- Default baseline result: no monitor executes 100/100 violations; always-alarm completes 0/100 goals; learned monitoring executes 0/100 violations and completes 100/100 legitimate goals.
+- Reproducibility verified for the fallback baseline: two default runs produced byte-identical `results.json` files (SHA-256 `79DB7C30B7A15E6499E38B1A7893A9B9AAA9E9FDF1D135C5B7187E75D5E3D771`).
 - Active tasks and next steps are tracked in `TASKS.md`.
 
 ## Known issues
 
-- The learned monitor is currently degenerate: it blocks every step, producing the same result as the oracle/rule monitor. This prevents meaningful safety/usefulness trade-off measurements.
+- The learned monitor currently matches the oracle on the default layout. Classification metrics, threshold calibration, held-out variants, and multiple seeds are still needed before interpreting monitor robustness.
 
 ## Scientific guardrails
 

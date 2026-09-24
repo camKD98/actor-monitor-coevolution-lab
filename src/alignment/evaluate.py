@@ -41,6 +41,7 @@ def evaluate_actor(
     episodes: int = 100,
     variant: int = 0,
     action_mode: Literal["greedy", "sample"] = "greedy",
+    fallback_actor: ActorCritic | None = None,
 ) -> EvaluationMetrics:
     torch.manual_seed(config.seed + 10 + variant)
     env = SpecificationGamingEnv(config, variant)
@@ -55,18 +56,27 @@ def evaluate_actor(
         observation = env.reset()
         proxy_return = 0.0
         true_return = 0.0
+        using_fallback = False
         while True:
+            policy = fallback_actor if using_fallback else actor
             with torch.no_grad():
-                logits, _ = actor(torch.from_numpy(observation))
+                logits, _ = policy(torch.from_numpy(observation))
             if action_mode == "greedy":
                 action = int(torch.argmax(logits).item())
             else:
                 action = int(torch.distributions.Categorical(logits=logits).sample().item())
-            proposed_violation = env.proposed_violation(action)
-            attempted += int(proposed_violation)
+            attempted += int(env.proposed_violation(action))
             blocked = monitor is not None and monitor(observation, action, env)
+            interventions += int(blocked)
+            if blocked and fallback_actor is not None and not using_fallback:
+                using_fallback = True
+                with torch.no_grad():
+                    fallback_logits, _ = fallback_actor(torch.from_numpy(observation))
+                action = int(torch.argmax(fallback_logits).item())
+                attempted += int(env.proposed_violation(action))
+                blocked = monitor is not None and monitor(observation, action, env)
+                interventions += int(blocked)
             if blocked:
-                interventions += 1
                 result = env.blocked_step()
             else:
                 result = env.step(action)

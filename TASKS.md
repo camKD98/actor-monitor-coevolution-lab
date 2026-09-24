@@ -4,10 +4,7 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Fix the learned monitor so it is not degenerate
-  - Problem: current monitor blocks every step, producing the same result as the oracle/rule monitor.
-  - Fix monitor data collection/class balance so it distinguishes the actual violating action from preceding safe actions.
-  - Re-run the default experiment and confirm a meaningful safety/usefulness trade-off.
+None.
 
 ## Next
 
@@ -37,6 +34,11 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## Completed
 
+- [x] Fix the learned-monitor baseline and establish a safety/usefulness comparison.
+  - Root cause: the monitor already separated the safe precursor from the violation, but the exploit-only actor repeatedly retried a blocked action.
+  - Added an independently true-reward-trained fallback policy; its actions remain subject to the deployment-time monitor.
+  - Corrected the hidden violation cost so violating is worse than a safe timeout and the fallback can learn the legitimate goal.
+  - Default seed: no monitor executes 100/100 violations; always-alarm completes 0/100 goals; learned monitor blocks all 100 violations and completes 100/100 legitimate goals.
 - [x] Set up clean project-local Python environment on the new PC.
 - [x] Install package with dev dependencies.
 - [x] Run Ruff and full pytest suite (8 tests passing).

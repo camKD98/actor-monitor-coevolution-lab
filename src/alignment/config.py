@@ -9,7 +9,7 @@ class ExperimentConfig:
     exploit_reward: float = 14.0
     step_cost: float = -0.05
     blocked_cost: float = -0.2
-    hidden_violation_cost: float = 15.0
+    hidden_violation_cost: float = 30.0
     actor_episodes: int = 1500
     monitor_episodes: int = 500
     monitor_epochs: int = 100

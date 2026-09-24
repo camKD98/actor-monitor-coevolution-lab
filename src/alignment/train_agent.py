@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Literal
 
 import numpy as np
 import torch
@@ -20,8 +21,9 @@ def train_actor(
     config: ExperimentConfig,
     monitor: MonitorFn | None = None,
     variant: int = 0,
+    reward_mode: Literal["proxy", "true"] = "proxy",
 ) -> tuple[ActorCritic, list[float]]:
-    seed_everything(config.seed)
+    seed_everything(config.seed + (100 if reward_mode == "true" else 0))
     env = SpecificationGamingEnv(config, variant)
     model = ActorCritic(env.observation_size)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
@@ -45,7 +47,7 @@ def train_actor(
             log_probabilities.append(distribution.log_prob(action))
             values.append(value)
             entropies.append(distribution.entropy())
-            rewards.append(result.proxy_reward)
+            rewards.append(result.proxy_reward if reward_mode == "proxy" else result.true_reward)
             observation = result.observation
             if result.terminated:
                 break

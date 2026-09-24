@@ -13,6 +13,7 @@ from alignment.train_monitor import collect_monitor_data, learned_monitor, train
 
 def run_experiment(config: ExperimentConfig, output: Path) -> dict[str, object]:
     actor, actor_returns = train_actor(config)
+    fallback_actor, fallback_returns = train_actor(config, reward_mode="true")
     dataset = collect_monitor_data(config, actor)
     monitor, monitor_losses = train_monitor(config, dataset)
     monitors = {
@@ -23,16 +24,23 @@ def run_experiment(config: ExperimentConfig, output: Path) -> dict[str, object]:
         "learned": learned_monitor(monitor),
     }
     metrics = {
-        name: evaluate_actor(config, actor, decision).as_dict()
+        name: evaluate_actor(
+            config,
+            actor,
+            decision,
+            fallback_actor=fallback_actor if decision is not None else None,
+        ).as_dict()
         for name, decision in monitors.items()
     }
     output.mkdir(parents=True, exist_ok=True)
     torch.save(actor.state_dict(), output / "actor.pt")
+    torch.save(fallback_actor.state_dict(), output / "fallback_actor.pt")
     torch.save(monitor.state_dict(), output / "monitor.pt")
     result = {
         "config": config.as_dict(),
         "training": {
             "final_actor_return": actor_returns[-1],
+            "final_fallback_return": fallback_returns[-1],
             "final_monitor_loss": monitor_losses[-1],
             "monitor_examples": len(dataset.labels),
             "monitor_positive_examples": int(dataset.labels.sum().item()),

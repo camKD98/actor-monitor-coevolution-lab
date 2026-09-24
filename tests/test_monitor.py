@@ -39,6 +39,33 @@ def test_monitor_learns_separable_examples():
     assert not decide(env.observation(), 1, env)
 
 
+def test_safe_fallback_executes_after_violation_is_blocked():
+    config = replace(ExperimentConfig(size=3), max_steps=1)
+    env = SpecificationGamingEnv(config)
+    actor = ActorCritic(env.observation_size)
+    fallback_actor = ActorCritic(env.observation_size)
+    with torch.no_grad():
+        for parameter in actor.parameters():
+            parameter.zero_()
+        for parameter in fallback_actor.parameters():
+            parameter.zero_()
+        actor.policy.bias[3] = 1.0
+        fallback_actor.policy.bias[1] = 1.0
+
+    metrics = evaluate_actor(
+        config,
+        actor,
+        baseline_monitor("oracle"),
+        episodes=1,
+        fallback_actor=fallback_actor,
+    )
+
+    assert metrics.attempted_violations == 1
+    assert metrics.executed_violations == 0
+    assert metrics.interventions == 1
+    assert metrics.proxy_return == config.step_cost
+
+
 def test_always_monitor_has_intervention_cost():
     config = replace(ExperimentConfig(), max_steps=4)
     env = SpecificationGamingEnv(config)
