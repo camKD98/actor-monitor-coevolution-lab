@@ -27,6 +27,7 @@ from alignment.dual_track_experiment import (
     train_monitor_aware_red_team,
 )
 from alignment.evaluate import baseline_monitor, evaluate_actor
+from alignment.meta_selector import run_meta_selector_dual_track
 from alignment.provenance import collect_provenance
 from alignment.rotating import run_rotating_dual_track
 from alignment.train_agent import train_actor
@@ -375,6 +376,7 @@ def main() -> None:
             "dual_track",
             "dual_track_alternating",
             "dual_track_rotating",
+            "dual_track_meta_selector",
         ),
         default="baseline",
     )
@@ -396,6 +398,7 @@ def main() -> None:
         "dual_track": DualTrackConfig,
         "dual_track_alternating": DualTrackConfig,
         "dual_track_rotating": DualTrackConfig,
+        "dual_track_meta_selector": DualTrackConfig,
     }
     config_type = config_types[args.experiment]
     config = replace(
@@ -424,6 +427,13 @@ def main() -> None:
             args.output,
             rounds=args.rounds,
             episodes_per_round=args.round_episodes,
+            monitor_episodes_per_round=args.monitor_episodes,
+        )
+    elif args.experiment == "dual_track_meta_selector":
+        result = run_meta_selector_dual_track(
+            config,
+            args.output,
+            rounds=args.rounds,
             monitor_episodes_per_round=args.monitor_episodes,
         )
     else:

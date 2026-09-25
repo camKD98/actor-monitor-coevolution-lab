@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from itertools import pairwise
 
 import numpy as np
 
@@ -107,4 +108,61 @@ def classify_dynamics(
             "escape_recall_max": escape_recall,
             "minimum_regime_rounds": minimum_regime_rounds,
         },
+    }
+
+
+def classify_multifamily_dynamics(
+    family_violation_rates: dict[str, Sequence[float]],
+    family_recalls: dict[str, Sequence[float]],
+    selected_families: Sequence[str],
+    minimum_switch_rate: float = 0.5,
+) -> dict[str, object]:
+    if set(family_violation_rates) != set(family_recalls):
+        raise ValueError("violation and recall families must match")
+    if not family_violation_rates:
+        raise ValueError("at least one family is required")
+    rounds = len(selected_families)
+    if any(len(values) != rounds for values in family_violation_rates.values()):
+        raise ValueError("every family series must match selected_families")
+    if any(len(values) != rounds for values in family_recalls.values()):
+        raise ValueError("every family series must match selected_families")
+    unknown = set(selected_families) - set(family_violation_rates)
+    if unknown:
+        raise ValueError(f"unknown selected families: {sorted(unknown)}")
+
+    family_results = {
+        family: classify_dynamics(
+            family_violation_rates[family], family_recalls[family]
+        )
+        for family in family_violation_rates
+    }
+    switches = sum(
+        current != previous for previous, current in pairwise(selected_families)
+    )
+    switch_rate = switches / max(1, rounds - 1)
+    family_regimes = {
+        family: str(result["regime"]) for family, result in family_results.items()
+    }
+    regime_values = list(family_regimes.values())
+    enough_rounds = rounds >= 6
+    if enough_rounds and "cycling" in regime_values and switch_rate >= minimum_switch_rate:
+        regime = "cycling"
+    elif enough_rounds and all(value == "convergence" for value in regime_values):
+        regime = "convergence"
+    elif enough_rounds and all(value == "escape" for value in regime_values):
+        regime = "escape"
+    else:
+        regime = "indeterminate"
+
+    return {
+        "regime": regime,
+        "rounds": rounds,
+        "selection_switches": switches,
+        "selection_switch_rate": switch_rate,
+        "selection_counts": {
+            family: selected_families.count(family) for family in family_violation_rates
+        },
+        "minimum_switch_rate": minimum_switch_rate,
+        "family_regimes": family_regimes,
+        "family_diagnostics": family_results,
     }

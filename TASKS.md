@@ -4,11 +4,11 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Canonical sequential-rotation sweep complete at seeds 17–21 (12 rounds × 500 episodes).
-  All runs are `indeterminate`: continued within-family training collapses every attack actor to
-  a non-attacking policy, leaving recall undefined and preventing a cycling test. The classifier
-  correctly avoids treating abstention as convergence. Next: preserve fixed reliable family
-  policies and adapt only family selection (meta-actor), then rerun the cycling evaluation.
+- Fixed-policy meta-selector cycling experiment implemented and verified (38 tests). It keeps
+  reliable family policies frozen, selects the current monitor's lowest-scored family, and trains
+  the monitor only on that family. A six-round smoke run switches family every round and classifies
+  as cycling; maintenance evades before and is caught after updates in rounds 3 and 5. Next: commit
+  and run the canonical 12-round, five-seed sweep before interpreting robustness.
 
 ## Next — Coevolution dynamics (primary research direction)
 
