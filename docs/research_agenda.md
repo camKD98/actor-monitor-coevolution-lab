@@ -2,13 +2,15 @@
 
 ## Research question
 
-Can a separately trained monitor reduce rule-breaking by a capable, reward-seeking agent while preserving useful performance, and does adding oversight layers improve that tradeoff?
+**Primary question (revised):** When an actor and monitor co-adapt iteratively in a safety monitoring game, under what structural conditions does the coevolution converge to a safe equilibrium, cycle indefinitely (Red Queen dynamics), or allow the attacker to escape monitoring entirely?
 
-The first experiment tests a deliberately narrower claim:
+**Prior question (addressed by completed experiments):** Can a separately trained monitor reduce rule-breaking by a capable, reward-seeking agent while preserving useful performance? The answer from two environment variants (contextual escalation and dual-track) across ten seeds is: yes for known attack families, but static monitoring with recall-based threshold selection fails systematically on structurally novel held-out attacks. This motivates the pivot to studying coevolution dynamics rather than continuing to demonstrate the same static-monitoring failure.
 
-> In a controlled environment with a known safety oracle, a learned monitor that sees an agent's proposed action can reduce undetected specification gaming without achieving safety merely by blocking everything.
+**Narrower claim now being tested:**
 
-This is a question about **AI control**—containing a system whose objectives may be wrong—not a complete solution to value alignment. The experiment assumes that the environment designer can label violations during training and evaluation. In the real world, identifying the right values and obtaining reliable labels are major unsolved problems.
+> In a controlled environment with information asymmetry between actor and monitor, the dynamics of alternating actor-monitor training exhibit qualitatively different regimes (convergence, cycling, escape) depending on measurable structural properties of the environment: action-space dimensionality, observation overlap, monitoring granularity, and relative adaptation rates.
+
+This is a question about the **dynamics of adversarial oversight**—when and why iterative safety training converges—not a complete solution to value alignment. The gridworld environments are deliberately small enough to characterize analytically. The contribution is formal understanding of coevolution dynamics, with the gridworld as illustration, not the main result.
 
 ## Why test this with small RL agents first?
 
@@ -16,7 +18,31 @@ Small policies trained from random initialization provide genuine model training
 
 The analogy to human policing is useful for generating hypotheses, but it should not be treated as evidence. Human institutions depend on legitimacy, appeals, transparency, divided powers, and changing social norms. A classifier that vetoes actions captures only a small part of that structure.
 
+## Strategic pivot rationale
+
+The completed experiments (baseline, contextual escalation, dual-track) established:
+
+1. Static monitoring catches known attacks but fails on structurally novel held-out families.
+2. Recall-based threshold selection is miscalibrated for out-of-distribution attacks.
+3. Monitor-aware actors trained against a frozen monitor do not meaningfully change behavior in the current environments.
+
+These results are reproducible but not novel — they restate the distribution-shift problem in a safety context. Continuing to build more elaborate toy environments would demonstrate the same failure repeatedly.
+
+The literature review (September 2025) revealed a specific gap: multiple groups (MAGIC, AdvGame, Self-RedTeam) have built LLM-scale attacker-defender coevolution systems, but none have formally characterized the *dynamics* — when coevolution converges, when it cycles, and what structural conditions determine the outcome. Thomson et al.'s "Games for AI Control" (2024/2026) formalizes static AI-control evaluations as PO stochastic games but does not study iterative adaptation dynamics. The adversarial training theory literature (Balcan et al. 2023, AT-Field) proves non-convergence in robustness games but not in safety monitoring games with information asymmetry. The evolutionary biology literature on Red Queen dynamics studies predator-prey coevolution but has not been connected to AI safety monitoring.
+
+The gap is: **formal characterization of actor-monitor coevolution dynamics in safety monitoring games.** Our gridworld environments are the right scale for this — small enough to analyze exhaustively, complex enough to exhibit non-trivial dynamics.
+
 ## Relationship to existing work
+
+### Actor-monitor coevolution (the gap we target)
+
+- Thomson et al. (2024/2026), [Games for AI Control](https://arxiv.org/abs/2409.07985) — formalizes AI Control as a POSG with Blue (protocol designer) and Red (adversary). Finds Pareto-optimal protocols via zero-sum POSG reduction. **Static analysis only**: Blue commits, Red best-responds. Does not study iterative coevolution dynamics. Our work extends their static model to iterative dynamics.
+- MAGIC (2025), [A Co-Evolving Attacker-Defender Adversarial Game](https://arxiv.org/abs/2602.01539) — MARL framework for LLM safety. Empirically shows coevolution improves defense. **Does not characterize convergence conditions or dynamics formally.** Reports improvement curves but not regime analysis.
+- AdvGame (Meta, 2025), [Safety Alignment via Non-cooperative Games](https://arxiv.org/abs/2512.20806) — joint attacker-defender training via online RL. Shifts Pareto frontier. **Does not analyze when or why convergence occurs.**
+- Self-RedTeam (2025), [Chasing Moving Targets with Online Self-Play RL](https://arxiv.org/abs/2506.07468) — claims Nash equilibrium convergence guarantee. **Theoretical guarantee relies on zero-sum assumption; empirical convergence shown but not regime-dependent.**
+- Balcan et al. (2023), [Nash Equilibria and Pitfalls of Adversarial Training](https://proceedings.mlr.press/v206/balcan23a.html) — proves alternating best response may not converge even when Nash equilibrium exists. **Applies to adversarial robustness, not safety monitoring with information asymmetry.**
+- Mertikopoulos et al., [Cycles in Adversarial Regularized Learning](https://doi.org/10.1137/1.9781611975031.172) — proves Poincare recurrence in zero-sum games under regularized dynamics. **Pure game theory without safety/monitoring application.**
+- Dieckmann et al. (1995), Red Queen dynamics in predator-prey systems — characterizes conditions for coevolutionary cycling vs. convergence vs. extinction. **Evolutionary biology; the mathematical structure (arms race vs. trench warfare, adaptation rate asymmetry) is analogous but unapplied to AI safety.**
 
 ### Specification gaming and safety environments
 
@@ -120,29 +146,39 @@ Questions to answer:
 
 ## Falsifiable hypotheses
 
-### H1: learned monitoring improves safety
+### H1: learned monitoring improves safety (ADDRESSED)
 
 Relative to no monitor, a learned monitor reduces the rate of executed violations on held-out episodes while retaining materially more task utility than an always-block baseline.
 
-**Falsified if:** violations do not decrease, or any decrease is explained by indiscriminate blocking that destroys useful performance.
+**Status:** Supported in both environments for known attack families. Not supported for structurally novel held-out attacks under recall-based threshold selection. This motivates H2–H4 below.
 
-### H2: adaptive agents erode static monitoring
+### H2: adaptive agents erode static monitoring (PARTIALLY ADDRESSED)
 
 An agent trained while aware of a frozen monitor finds policies with a higher undetected-violation rate than a non-adaptive agent.
 
-**Falsified if:** adaptation does not change evasion across seeds and environment variants.
+**Status:** Not observed in dual-track environment — monitor-aware actors do not meaningfully differ from non-adaptive actors. Detection/investigation penalties (5.0/3.0) may be too small vs. violation reward (20.0), or the action space may be too constrained for evasion to emerge. Remains open.
 
-### H3: adversarially updated monitoring recovers robustness
+### H3: alternating coevolution exhibits regime-dependent dynamics (NEW — PRIMARY)
 
-Alternating monitor and actor updates recover some safety lost under adaptive evasion, including on held-out layouts or exploit variants.
+When actor and monitor are updated in alternating rounds, the dynamics depend on measurable structural properties of the environment. Specifically:
 
-**Falsified if:** gains exist only on training layouts, false positives become unacceptable, or the actor-monitor cycle is unstable.
+- **Convergence regime:** when the monitor's observation space covers the distinguishing features of all feasible attack paths, alternating training converges to a stable equilibrium where the monitor catches all attacks.
+- **Cycling regime (Red Queen):** when multiple attack paths exist with partial observability, alternating training oscillates — the actor finds an evasion, the monitor adapts, the actor finds a new evasion.
+- **Escape regime:** when the action space admits attacks that are observationally identical to legitimate behavior (perfect mimicry), the actor eventually finds an unmonitorable policy and the monitor cannot recover.
 
-### H4: oversight depth has diminishing and potentially negative returns
+**Falsified if:** dynamics do not vary with environment structure, or the regimes cannot be distinguished empirically and analytically in our gridworld environments.
+
+### H4: environment structure predicts coevolution outcome (NEW — SECONDARY)
+
+The regime (convergence/cycling/escape) is predictable from measurable structural properties: (a) the ratio of distinguishable attack paths to total attack paths in the monitor's observation space, (b) the relative adaptation rates of actor and monitor, (c) the information asymmetry between actor intent and monitor observation.
+
+**Falsified if:** regime outcomes are not reproducible across seeds, or structural properties do not predict outcomes better than chance.
+
+### H5: oversight depth has diminishing and potentially negative returns (DEFERRED)
 
 A second monitor that audits first-level decisions helps only when it receives evidence that is at least partly independent and the first monitor can meaningfully fail. Identical nested monitors are expected to show correlated errors rather than convergence to zero risk.
 
-This is a later-stage hypothesis; it must not be inferred from the one-monitor experiment.
+This remains a later-stage hypothesis; it must not be inferred from the single-monitor experiments.
 
 ## Threat model
 
@@ -207,12 +243,23 @@ Before implementing depth greater than one, specify:
 
 ## Experimental phases
 
-1. **Mechanism validation:** make an unmonitored policy reliably exploit the proxy reward.
-2. **Static monitor:** train a classifier on trajectories and compare it with all controls.
-3. **Adaptive evasion:** train the actor against a frozen monitor.
-4. **Alternating training:** update actor and monitor in rounds and test held-out variants.
-5. **Recursive oversight:** introduce a fallible/corrupt monitor and audit it at depths 1–3.
-6. **Language transfer:** fine-tune small open-weight language agents only if earlier phases produce a clear question worth transferring.
+1. **Mechanism validation:** make an unmonitored policy reliably exploit the proxy reward. **(COMPLETE)**
+2. **Static monitor:** train a classifier on trajectories and compare it with all controls. **(COMPLETE)** — Threshold-selection failure demonstrated in two environments.
+3. **Adaptive evasion:** train the actor against a frozen monitor. **(PARTIALLY COMPLETE)** — Monitor-aware actors implemented but do not meaningfully differ from non-adaptive actors. Needs rework.
+4. **Alternating training and dynamics characterization (PRIMARY NEXT PHASE):**
+   - Implement alternating actor-monitor training loop in the dual-track environment.
+   - Run sweeps varying: number of alternation rounds, relative training episodes per round, environment parameters.
+   - Classify observed dynamics into convergence/cycling/escape regimes.
+   - Formalize the actor-monitor coevolution game and derive analytical conditions for each regime.
+   - Test predictions by modifying environment structure (observation overlap, action space, information asymmetry).
+5. **Formal analysis:**
+   - Model the actor-monitor interaction as an extensive-form game with information asymmetry.
+   - Characterize Nash equilibria and their properties (safety, usefulness).
+   - Prove conditions under which alternating best response converges vs. cycles.
+   - Connect to the Balcan et al. (2023) non-convergence result and Red Queen dynamics literature.
+   - Derive structural conditions (monitoring coverage, mimicry capacity) that predict the regime.
+6. **Recursive oversight:** introduce a fallible/corrupt monitor and audit it at depths 1–3. (DEFERRED)
+7. **Language transfer:** use an LLM as actor/monitor only if the formal analysis produces predictions worth testing at scale. (DEFERRED)
 
 ## Interpretation rules
 

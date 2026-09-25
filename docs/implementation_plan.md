@@ -64,18 +64,76 @@ The scientific claim is deliberately narrower than “policing solves alignment�
 - `src/alignment/cli.py` — baseline experiment and artifact output.
 - `tests/` — environment, monitor, and smoke tests.
 
-## Remaining verification and development
+## Completed verification
 
-- [ ] Create a clean project-specific environment on the Windows PC and install with development dependencies.
-- [ ] Run Ruff and the complete pytest suite.
-- [ ] Run a short CPU smoke experiment.
-- [ ] Confirm fixed-seed reproducibility.
-- [ ] Confirm the default unmonitored agent reliably learns the exploit.
-- [ ] Confirm the oracle blocks violations and always-alarm destroys utility.
-- [ ] Measure learned-monitor precision, recall, false-positive rate, ROC-AUC, and calibration; these are not implemented yet.
-- [ ] Add held-out variants and multi-seed aggregation.
-- [ ] Implement adaptive actor and alternating actor-monitor training.
-- [ ] Add regenerated plots/tables and a report only after the baseline is validated.
+- [x] Create a clean project-specific environment on the Windows PC and install with development dependencies.
+- [x] Run Ruff and the complete pytest suite.
+- [x] Run a short CPU smoke experiment.
+- [x] Confirm fixed-seed reproducibility.
+- [x] Confirm the default unmonitored agent reliably learns the exploit.
+- [x] Confirm the oracle blocks violations and always-alarm destroys utility.
+- [x] Measure learned-monitor precision, recall, false-positive rate, ROC-AUC, and calibration.
+- [x] Add held-out variants and multi-seed aggregation (contextual and dual-track, 5 seeds each).
+- [x] Implement monitor-aware actor training against frozen monitor.
+
+## Phase 4: Alternating training and coevolution dynamics (CURRENT)
+
+This is the primary next phase. The goal is to implement alternating actor-monitor training and characterize the dynamics.
+
+### Implementation steps
+
+1. **Alternating training loop** — implement a training loop that alternates:
+   - Train actor for N episodes against frozen monitor
+   - Retrain monitor on new actor behavior + historical data
+   - Repeat for K rounds
+   - Record per-round metrics: actor violation rate, monitor recall, threshold, evasion rate
+
+2. **Dynamics sweep** — run alternating training across parameter variations:
+   - Number of rounds (5, 10, 20, 50)
+   - Episodes per round (100, 500, 1500)
+   - Both environments (contextual + dual-track)
+   - Multiple seeds per configuration
+
+3. **Regime classification** — develop metrics to classify observed dynamics:
+   - Convergence: metrics stabilize (violation rate, recall approach constants)
+   - Cycling: metrics oscillate (actor evasion rate and monitor recall alternate)
+   - Escape: actor violation rate monotonically increases while monitor recall decreases
+
+4. **Environment structure variations** — test predictions by modifying:
+   - Monitor observation (full state vs. partial vs. action-only)
+   - Action space (add/remove actions to change mimicry capacity)
+   - Information asymmetry (what the actor knows about monitoring)
+
+## Phase 5: Formal analysis (PARALLEL)
+
+Develop the game-theoretic formalization alongside the empirical work.
+
+1. **Game model** — formalize the actor-monitor interaction as an extensive-form game with:
+   - Actor: private type (intent), public actions, information set includes monitor existence
+   - Monitor: observes actions and partial state, emits risk score
+   - Intervention rule: threshold-based with investigation option
+   - Payoffs: actor gets violation reward minus detection cost; monitor gets correct classification minus false alarm cost
+
+2. **Equilibrium analysis** — characterize Nash equilibria:
+   - When does a pure strategy equilibrium exist where all attacks are caught?
+   - When do only mixed strategy equilibria exist (cycling)?
+   - Under what conditions does no equilibrium exist (divergence)?
+
+3. **Structural conditions** — derive conditions on environment parameters:
+   - Monitoring coverage: fraction of attack paths distinguishable from legitimate paths
+   - Mimicry capacity: whether observationally identical attack paths exist
+   - Adaptation rate asymmetry: relative learning speed of actor vs. monitor
+
+4. **Connection to existing theory** — relate results to:
+   - Balcan et al. non-convergence in adversarial robustness games
+   - Red Queen dynamics and arms race / trench warfare distinction
+   - Thomson et al. AI-Control Games static equilibrium analysis
+
+## Remaining development (deferred)
+
+- [ ] Recursive oversight extension (only after dynamics characterization).
+- [ ] Language-model transfer (only if formal analysis produces testable predictions at scale).
+- [ ] Add regenerated plots/tables and a report.
 
 ## Contextual-escalation experiment
 

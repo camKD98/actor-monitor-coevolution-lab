@@ -6,32 +6,55 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 (none)
 
-## Next
+## Next — Coevolution dynamics (primary research direction)
 
-- [ ] Investigate why monitor-aware red-team actors do not meaningfully change behavior
-  - Detection penalty (5.0) and investigation penalty (3.0) may be too small relative to violation reward (20.0).
-  - Try increasing penalties or switching to a multiplicative stealth bonus.
-  - aware_direct_sabotage fails to learn at seed 21; diagnose whether monitor penalty causes collapse.
-- [ ] Evaluate a threshold rule that incorporates investigation cost/benefit tradeoff
-  - Current predeclared recall rule drives threshold to near-1.0 and misses held-out at all 5 seeds.
-  - Consider a cost-weighted rule, quantile-based conservative threshold, or explicit investigation budget.
-- [ ] Fix collaborative actor training instability (0/100 completions at seeds 19, 20)
-  - May need more episodes, lower entropy coefficient, or adjusted collaborative reward shaping.
+### A. Alternating training implementation (empirical, parallelizable)
+- [ ] Implement alternating actor-monitor training loop in the dual-track environment
+  - Train actor for N episodes against frozen monitor → retrain monitor on new behavior → repeat K rounds
+  - Record per-round metrics: actor violation rate, monitor recall, evasion rate, returns
+  - Support configurable rounds, episodes-per-round, and which actor role to co-train
+- [ ] Run initial alternating training sweep (dual-track, seeds 17–21)
+  - Start with 10 rounds, 500 episodes/round
+  - Classify dynamics: does it converge, cycle, or allow escape?
+- [ ] Run parameter sweeps varying rounds (5, 10, 20, 50) and episodes/round (100, 500, 1500)
+- [ ] Run environment structure variations:
+  - Partial monitor observation (action-only vs. full state)
+  - Modified action space (add/remove actions to change mimicry capacity)
+  - Varied information asymmetry
+
+### B. Formal game-theoretic analysis (theory, parallelizable with A)
+- [ ] Formalize the actor-monitor interaction as an extensive-form game
+  - Actor: private intent, public actions; Monitor: observes actions + partial state, emits risk score
+  - Define payoff structure including intervention cost, investigation cost, violation reward
+  - Model as Stackelberg game (monitor commits, actor best-responds) and simultaneous game (alternating updates)
+- [ ] Characterize Nash equilibria in the dual-track environment
+  - Enumerate feasible actor strategies (attack paths) and monitor strategies (threshold + investigation rules)
+  - Determine when pure strategy equilibria exist vs. only mixed
+- [ ] Derive structural conditions predicting convergence/cycling/escape
+  - Monitoring coverage ratio: distinguishable attack paths / total attack paths
+  - Mimicry capacity: existence of observationally identical attack/legitimate paths
+  - Adaptation rate asymmetry: relative learning speed of actor vs. monitor
+- [ ] Connect to existing theory
+  - Balcan et al. (2023) non-convergence in adversarial robustness
+  - Red Queen dynamics (arms race vs. trench warfare)
+  - Thomson et al. (2024) AI-Control Games static analysis
+
+### C. Regime classification metrics (bridges A and B)
+- [ ] Define quantitative regime classification criteria
+  - Convergence: per-round violation rate and recall variance below threshold for last N rounds
+  - Cycling: autocorrelation of per-round metrics is significantly negative at lag 1
+  - Escape: monotonic increase in actor violation rate over last N rounds
+- [ ] Validate regime classification on initial sweep data
+
+## Backlog / lower priority
+
+- [ ] Fix collaborative actor training instability (2/5 seeds fail)
+- [ ] Investigate monitor-aware actor penalty scaling (currently too small to affect behavior)
 - [ ] Implement an imperfect rule baseline
-  - Current rule and oracle are identical; a genuinely fallible rule baseline is needed.
-- [ ] Implement alternating actor-monitor training
-  - Update actor and monitor in rounds; test robustness on held-out variants.
-
-## Backlog / later
-
-- [ ] Recursive oversight extension (depth 1–3)
-  - Only after the first-level monitor has a defined failure/corruption/information-limitation model.
-  - Ensure higher layer has partially independent evidence channel.
 - [ ] Save per-episode data and generate plots/tables
-  - Do this only after the baseline is validated.
+- [ ] Recursive oversight extension (only after dynamics characterization)
+- [ ] Language-model transfer (only if formal analysis produces testable predictions at scale)
 - [ ] Explicit CUDA / device selection
-- [ ] Language-model transfer experiment
-  - Only if earlier phases produce a clear question worth transferring.
 
 ## Completed
 
