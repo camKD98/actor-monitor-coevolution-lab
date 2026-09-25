@@ -4,11 +4,12 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Partial-state meta-selector variation implemented and verified (39 tests). The predeclared mask
-  hides `deployed` and `certified` while retaining prerequisite cues. A six-round smoke run
-  classifies as cycling: every selected family evades the previous monitor, selection switches
-  every round, and retraining catches the selected family in 5/6 rounds. Next: commit, then run
-  the canonical 12-round five-seed sweep before interpreting robustness.
+- Canonical partial-state meta-selector sweep complete at seeds 17–21 (12 rounds). The
+  predeclared mask shifts the regime from full-state convergence (5/5) to cycling at 4/5 seeds;
+  seed 20 is indeterminate under the unchanged threshold. Selected attacks evade before 43/60
+  updates and are caught after all 60/60 updates, with reliable 100/100 attack capability.
+  Next: adaptation-rate sweeps (monitor data/epochs), attack-memory windows, and additional
+  predeclared observation masks; do not tune the classifier to relabel seed 20.
 
 ## Next — Coevolution dynamics (primary research direction)
 
