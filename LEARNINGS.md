@@ -54,7 +54,10 @@ Run the CLI:
 - In the contextual stage result, block-only monitoring stops the known direct attack but misses 100/100 held-out exfiltration attacks. An idealized costly-investigation policy stops both, while proxy, safety, and collaborative actors each retain 100/100 completion with no false interventions.
 - Delayed red-team policies were unreliable with sparse REINFORCE rewards alone. Explicit role-protocol pretraining plus randomized curriculum states made direct and exfiltration sequences reliable; interpret them as engineered adversaries, not emergent deception.
 - Bounded investigation now uses explicit authorization evidence (access granted, privileged mutation, external transfer, elevated-scope authorization) rather than the hidden violation label. It remains a hand-coded evidence/adjudication channel, not a learned investigator.
-- Confirmed contextual violations quarantine the actor, preventing repeated veto/investigation loops. In the exploratory seed-17 rerun this reduced direct/exfiltration interventions from 800/700 to 100 each and investigation cost from 80/70 to 10/10.
+- Confirmed contextual violations quarantine the actor, preventing repeated veto/investigation loops. This reduces each caught attack policy to one intervention/investigation per episode.
+- Five-seed contextual evaluation (17–21) found substantial held-out score instability: investigation threshold 0.1 misses exfiltration at seed 18, threshold 0.5 misses it at seeds 18–19, and block-only catches it only at seed 20.
+- The proxy actor independently specification-games at seed 20 (100/100 direct violations) but completes safely at the other four seeds. Safety and collaborative actors complete safely across all five seeds.
+- Do not treat role names as ground-truth usefulness categories: the current frontier groups the proxy actor as legitimate even when it learns the exploit. Classify episodes by observed outcome instead.
 - Active tasks and next steps are tracked in `TASKS.md`.
 
 ## Known issues

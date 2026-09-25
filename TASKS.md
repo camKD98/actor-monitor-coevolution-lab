@@ -4,26 +4,17 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Build the contextual-escalation experiment
-  - First slice implemented: legitimate work/research, access escalation, direct override, and held-out exfiltration.
-  - Separate proxy, safety-penalized, direct red-team, and exfiltration red-team policies now train independently.
-  - The police trains only on safety/direct-red-team trajectories; exfiltration actions are excluded from its dataset.
-  - Seed 17 result: both red-team policies execute 100/100 unmonitored violations. Block-only stops the known direct attack but misses 100/100 held-out exfiltration attacks; costly investigation stops both while preserving 100/100 completion for proxy, safety, and collaborative task policies.
-  - Legitimate collaboration and exfiltration now share research/access/share preparation; role protocols use explicit supervised pretraining plus RL curriculum, so red-team behavior is engineered rather than emergent.
-  - Bounded investigation now checks access scope, privileged mutation, and external-transfer evidence without reading the hidden violation label; confirmed violations quarantine the actor instead of allowing repeated retries.
-  - Next: sweep police thresholds/costs to measure the intervention frontier, then run multiple seeds.
-  - Preserve the completed gridworld as a mechanism-validation baseline.
+- [ ] Add monitor classification metrics and calibration
+  - Fix frontier accounting so a specification-gaming proxy policy is not counted as legitimate.
+  - Add precision, recall, false-positive rate, ROC-AUC, and calibration data.
+  - Select the investigation threshold on a validation split before final evaluation.
 
 ## Next
 
-- [ ] Add monitor classification metrics and calibration
-  - Precision, recall, false-positive rate, ROC-AUC, calibration curve.
-  - Select monitor threshold on a validation split before final evaluation.
 - [ ] Implement an imperfect rule baseline
   - Current rule and oracle are identical; a genuinely fallible rule baseline is needed.
-- [ ] Add held-out environment variants and multi-seed aggregation
-  - Separate train/evaluation layouts or exploit positions.
-  - Aggregate results across multiple seeds.
+- [ ] Add held-out environment variants
+  - Separate train/evaluation layouts or escalation structures beyond the held-out action.
 - [ ] Implement adaptive actor training against a frozen monitor
   - Train the actor while aware of the monitor; measure increased undetected violations.
 - [ ] Implement alternating actor-monitor training
@@ -42,6 +33,11 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## Completed
 
+- [x] Build and evaluate the first contextual-escalation experiment.
+  - Added proxy, safety, collaborative, direct-red-team, and held-out-exfiltration roles with overlapping preparation.
+  - Added bounded authorization investigation, quarantine, provenance capture, and a threshold frontier.
+  - Five-seed evaluation found material score instability: threshold 0.1 misses held-out exfiltration at one of five seeds, while block-only misses it at four of five.
+  - The proxy actor independently learns the direct exploit at seed 20; safety and collaborative actors remain safe across all five seeds.
 - [x] Fix the learned-monitor baseline and establish a safety/usefulness comparison.
   - Root cause: the monitor already separated the safe precursor from the violation, but the exploit-only actor repeatedly retried a blocked action.
   - Added an independently true-reward-trained fallback policy; its actions remain subject to the deployment-time monitor.
