@@ -4,11 +4,11 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Attack-memory window variation implemented and verified (40 tests). `--attack-memory-rounds`
-  retains the last N attack batches; 0 means cumulative memory. Six-round low-data smoke runs
-  with windows 3 and cumulative are indeterminate and switch less often than window 1, but are
-  not claim-relevant. Next predeclared canonical sweep: partial-state meta-selector, windows
-  1, 2, 3, and cumulative, seeds 17–21, 12 rounds; do not tune settings after inspecting results.
+- Canonical attack-memory sweep complete (20 runs). Increasing memory monotonically reduces
+  pre-update evasion: 43/60 (window 1), 24/60 (window 2), 12/60 (window 3), 2/60 (cumulative).
+  Cycling falls from 4/5 to 2/5 to 0/5 seeds; cumulative memory converges at 5/5. Next: separate
+  family diversity from sample count using balanced fixed-size replay, then test adaptation-rate
+  asymmetry without changing coverage.
 
 ## Next — Coevolution dynamics (primary research direction)
 

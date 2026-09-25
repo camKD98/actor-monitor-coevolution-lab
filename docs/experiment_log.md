@@ -4,6 +4,51 @@ This is the committed ledger for claim-relevant experiments. Raw artifacts remai
 
 ## Canonical runs
 
+### DT-MEM2-4e2b86b-W1/W2/W3/CUM-S17–S21 — Attack-memory regime transition
+
+- **Status:** canonical 20-run evaluation; all artifacts report a clean tracked tree and contain 12 complete rounds.
+- **Purpose:** test whether retaining more historical attack data moves the partial-state best-response system from cycling toward convergence. Hold observation, actors, selector, monitor capacity, data per batch, and classification criteria fixed; vary only the number of recent attack batches retained by monitor training.
+- **Code commit:** `4e2b86bfd7779e2dfab5f89f6c304aa1d7cfa13e`; all runs report `tracked_tree_dirty=false`.
+- **Commands:** for each `{memory,label}` in `{1,W1}`, `{2,W2}`, `{3,W3}`, `{0,CUM}` and each seed in `17..21`:
+
+```powershell
+& '.\.venv\Scripts\alignment-lab.exe' --experiment dual_track_meta_selector --monitor-observation partial_state --attack-memory-rounds {memory} --seed {seed} --rounds 12 --actor-episodes 1500 --monitor-episodes 500 --output ".\runs\DT-MEM2-4e2b86b-{label}-S{seed}"
+```
+
+- **Artifacts and SHA-256:**
+  - W1 S17: `runs/DT-MEM2-4e2b86b-W1-S17/results.json` — `CBC16D098477C8FACBA299641208AB1DDA7AC5A22AB3B834176133C7B458BC70`
+  - W1 S18: `runs/DT-MEM2-4e2b86b-W1-S18/results.json` — `9D5FCEC55E900FF6644FE8941A9103E7E864E5960F3BFD2647AE7DFBC8637406`
+  - W1 S19: `runs/DT-MEM2-4e2b86b-W1-S19/results.json` — `7EA96EF575027FE566A2CFD0226EDD0FE48560283A5F4EA94206DCA583E64355`
+  - W1 S20: `runs/DT-MEM2-4e2b86b-W1-S20/results.json` — `451DD1E86608B6C512DBCAAC99BD38C8197C33232C79FB606FF4842488EE34C8`
+  - W1 S21: `runs/DT-MEM2-4e2b86b-W1-S21/results.json` — `D9503DEA855E5195ABEECC84D62D1983ABA3B421B2D384E71BC7E6C31229DDA9`
+  - W2 S17: `runs/DT-MEM2-4e2b86b-W2-S17/results.json` — `F201852BB3E01E2D32385A4014C13BD2DD63FD1984BF08990A2B295C6C3BDE1B`
+  - W2 S18: `runs/DT-MEM2-4e2b86b-W2-S18/results.json` — `1E0533F9855E1C6F636619A5873A4E5930E460A78C9435B9B64795A95147816D`
+  - W2 S19: `runs/DT-MEM2-4e2b86b-W2-S19/results.json` — `A25DF841467B91A5FEA43E10AF8E308C68B27E0C92BC03178CC22405EE928AD9`
+  - W2 S20: `runs/DT-MEM2-4e2b86b-W2-S20/results.json` — `46305212F4E73394A5EFEDED2467F7256916E49F1F0D6CAC1DF1813B56FC6285`
+  - W2 S21: `runs/DT-MEM2-4e2b86b-W2-S21/results.json` — `FB917934DF4045DDA53A65725FB06F64C8820E5B4AE13DC246E716E98F0F9FA3`
+  - W3 S17: `runs/DT-MEM2-4e2b86b-W3-S17/results.json` — `769044659C6443D18D671DAF9EB0B6809973736FDE71DACEDF684961859A6B93`
+  - W3 S18: `runs/DT-MEM2-4e2b86b-W3-S18/results.json` — `49E8E44F6B20BDC5ED55F5EAB2CC20A85074E9D613809F41F19D1DE81E67F00F`
+  - W3 S19: `runs/DT-MEM2-4e2b86b-W3-S19/results.json` — `5835863BEFBCFF4AE5F2DF02AB7BF2F3357D4FC381369CA84F69483AC316F84B`
+  - W3 S20: `runs/DT-MEM2-4e2b86b-W3-S20/results.json` — `0E9B5AF433D21E9E4D26D80145A39D1920E1225E1C08489F7E22B04184F457A0`
+  - W3 S21: `runs/DT-MEM2-4e2b86b-W3-S21/results.json` — `0CD2028351C856E3ECE635C19092E2598991E1F97C5E9F77D7C3CA779942DC9A`
+  - CUM S17: `runs/DT-MEM2-4e2b86b-CUM-S17/results.json` — `E80F0407FDCC2084B1D05B87378FE4E40CF421FE7D103CA3ADF793E1CA5D790C`
+  - CUM S18: `runs/DT-MEM2-4e2b86b-CUM-S18/results.json` — `1B126F53B0B7041C7C123DBB1F88D0C3A552DA26AEA58C880B767F952A36697A`
+  - CUM S19: `runs/DT-MEM2-4e2b86b-CUM-S19/results.json` — `8BBF23DF43798EB93CD5C2D5CE6583291201CBA950958606C79B9B851E20BDC8`
+  - CUM S20: `runs/DT-MEM2-4e2b86b-CUM-S20/results.json` — `D7AFF91ACDF500F3F407915A7334ABF4213B82FFC2D2A68E6516AF785AF7EDCA`
+  - CUM S21: `runs/DT-MEM2-4e2b86b-CUM-S21/results.json` — `8177D10D4C10FEF0285CD734C3F983314CBE3B9BDB752C8B12CF88B67D6722A7`
+- **Environment:** Python 3.11.9, NumPy 2.4.6, PyTorch 2.14.0, pytest 8.4.2, Ruff 0.16.8, Windows 10 build 26200.
+- **Configuration:** partial-state mask hides deployed/certified; fixed pretrained family policies; minimum-score family selection; 12 rounds; 500 episodes per retained attack batch; 150 monitor epochs; fixed legitimate history; unchanged block threshold and regime criteria. Memory 0 means retain all attack batches cumulatively.
+- **Key quantitative results:**
+  - **Window 1:** cycling at 4/5 seeds (S17, S18, S19, S21), S20 indeterminate; 43/60 selected-family pre-update evasions; 55/55 selection switches.
+  - **Window 2:** cycling at 2/5 (S18, S21), convergence at 2/5 (S17, S19), S20 indeterminate; 24/60 evasions; 54/55 switches.
+  - **Window 3:** cycling at 0/5, convergence at 1/5 (S19), indeterminate at 4/5; 12/60 evasions; 44/55 switches.
+  - **Cumulative:** convergence at 5/5 seeds; 2/60 evasions (both S18); 24/55 switches.
+  - Monitor retraining catches the selected family after all 240/240 updates across all memory conditions. Attack capability remains fixed by construction.
+- **Supports:** attack memory is a strong structural predictor of regime. Increasing retained attack history monotonically reduces evasion (43 → 24 → 12 → 2 of 60), eliminates classified cycling by window 3, and yields convergence at every seed with cumulative memory. This matches the prediction that broader coverage/history lowers effective actor advantage and suppresses Red-Queen dynamics.
+- **Does not support:** a sharp universal phase boundary at a particular finite window. Intermediate windows produce mixed and indeterminate seed-level regimes; window 3 is not uniformly classified as convergence within 12 rounds.
+- **Confounders and limitations:** retained units are data batches, not guaranteed unique families; repeated selector choices can fill a finite window with one family. Cumulative datasets grow each round while finite windows remain bounded, changing both diversity and sample count. The selector is white-box, attacks are fixed, and only five adjacent seeds are tested.
+- **Decision:** treat memory as a graded regime-control parameter rather than a binary switch. Next separate diversity from sample count (balanced per-family replay with fixed total examples) and test adaptation-rate asymmetry without changing memory coverage.
+
 ### DT-META-PARTIAL-5ffc8f7-S17–S21 — Partial-state best-response cycling test
 
 - **Status:** canonical five-seed evaluation; all runs report a clean tracked tree.
