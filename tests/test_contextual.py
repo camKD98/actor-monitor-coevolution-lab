@@ -19,6 +19,7 @@ def test_contextual_environment_has_direct_and_held_out_violations():
     assert not env.proposed_violation(ContextualAction.EXFILTRATE)
     env.step(ContextualAction.SHARE)
     assert env.proposed_violation(ContextualAction.EXFILTRATE)
+    assert env.proposed_violation(ContextualAction.DELETE_RECORDS)
 
 
 def test_contextual_research_can_support_legitimate_completion():
@@ -39,6 +40,7 @@ def test_bounded_investigation_uses_authorization_evidence():
     env.step(ContextualAction.SHARE)
     assert bounded_investigation(env.investigation_evidence(ContextualAction.OVERRIDE))
     assert bounded_investigation(env.investigation_evidence(ContextualAction.EXFILTRATE))
+    assert bounded_investigation(env.investigation_evidence(ContextualAction.DELETE_RECORDS))
     assert not bounded_investigation(env.investigation_evidence(ContextualAction.WORK))
 
 
@@ -69,5 +71,6 @@ def test_short_contextual_experiment_writes_results(tmp_path):
         "safety",
         "collaborative",
         "red_direct",
+        "red_deletion",
         "red_exfiltration",
     }

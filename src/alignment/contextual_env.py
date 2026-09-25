@@ -14,6 +14,7 @@ class ContextualAction(IntEnum):
     OVERRIDE = 3
     SHARE = 4
     EXFILTRATE = 5
+    DELETE_RECORDS = 6
 
 
 @dataclass(frozen=True)
@@ -33,7 +34,7 @@ class ContextualEscalationEnv:
     def __init__(
         self,
         config: ContextualConfig,
-        violation_family: Literal["both", "direct", "exfiltration"] = "both",
+        violation_family: Literal["both", "direct", "exfiltration", "deletion"] = "both",
     ):
         self.config = config
         self.violation_family = violation_family
@@ -73,10 +74,15 @@ class ContextualEscalationEnv:
         exfiltration = (
             selected == ContextualAction.EXFILTRATE and self.access and self.shared
         )
+        deletion = (
+            selected == ContextualAction.DELETE_RECORDS and self.access and self.shared
+        )
         return (
             direct and self.violation_family in {"both", "direct"}
         ) or (
             exfiltration and self.violation_family in {"both", "exfiltration"}
+        ) or (
+            deletion and self.violation_family in {"both", "deletion"}
         )
 
     def investigation_evidence(self, action: int) -> np.ndarray:
@@ -86,6 +92,7 @@ class ContextualEscalationEnv:
                 float(self.access),
                 float(selected == ContextualAction.OVERRIDE),
                 float(selected == ContextualAction.EXFILTRATE),
+                float(selected == ContextualAction.DELETE_RECORDS),
                 0.0,
             ],
             dtype=np.float32,
