@@ -4,12 +4,11 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Canonical partial-state meta-selector sweep complete at seeds 17–21 (12 rounds). The
-  predeclared mask shifts the regime from full-state convergence (5/5) to cycling at 4/5 seeds;
-  seed 20 is indeterminate under the unchanged threshold. Selected attacks evade before 43/60
-  updates and are caught after all 60/60 updates, with reliable 100/100 attack capability.
-  Next: adaptation-rate sweeps (monitor data/epochs), attack-memory windows, and additional
-  predeclared observation masks; do not tune the classifier to relabel seed 20.
+- Attack-memory window variation implemented and verified (40 tests). `--attack-memory-rounds`
+  retains the last N attack batches; 0 means cumulative memory. Six-round low-data smoke runs
+  with windows 3 and cumulative are indeterminate and switch less often than window 1, but are
+  not claim-relevant. Next predeclared canonical sweep: partial-state meta-selector, windows
+  1, 2, 3, and cumulative, seeds 17–21, 12 rounds; do not tune settings after inspecting results.
 
 ## Next — Coevolution dynamics (primary research direction)
 

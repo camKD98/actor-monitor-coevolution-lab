@@ -36,7 +36,10 @@ def run_meta_selector_dual_track(
     eval_episodes: int = 100,
     block_threshold: float = 0.9,
     monitor_observation: MonitorObservation = "full",
+    attack_memory_rounds: int = 1,
 ) -> dict[str, object]:
+    if attack_memory_rounds < 0:
+        raise ValueError("attack_memory_rounds must be non-negative")
     legitimate_objectives = ("proxy", "safety", "collaborative")
     legitimate_trained = {
         name: train_dual_track_actor(config, name) for name in legitimate_objectives
@@ -65,8 +68,10 @@ def run_meta_selector_dual_track(
         ),
         monitor_observation,
     )
+    attack_history = [initial_attack_dataset]
+    attack_history_families = [_family_name(ROTATION[0])]
     monitor, initial_losses = train_dual_track_monitor(
-        config, _concat_datasets([legitimate_dataset, initial_attack_dataset])
+        config, _concat_datasets([legitimate_dataset, *attack_history])
     )
     family_datasets = {
         objective: _mask_dataset(
@@ -110,8 +115,20 @@ def run_meta_selector_dual_track(
             ),
             monitor_observation,
         )
+        attack_history.append(fresh_attack_dataset)
+        attack_history_families.append(selected_name)
+        retained_attacks = (
+            attack_history
+            if attack_memory_rounds == 0
+            else attack_history[-attack_memory_rounds:]
+        )
+        retained_families = (
+            attack_history_families
+            if attack_memory_rounds == 0
+            else attack_history_families[-attack_memory_rounds:]
+        )
         monitor_dataset = _concat_datasets(
-            [legitimate_dataset, fresh_attack_dataset]
+            [legitimate_dataset, *retained_attacks]
         )
         monitor, monitor_losses = train_dual_track_monitor(config, monitor_dataset)
         deployed_monitor = _deploy_monitor(monitor, monitor_observation)
@@ -131,6 +148,7 @@ def run_meta_selector_dual_track(
                 "selected_family": selected_name,
                 "selection_rule": "minimum_mean_positive_score",
                 "monitor_training_family": selected_name,
+                "monitor_attack_memory_families": retained_families.copy(),
                 "monitor_examples": len(monitor_dataset.labels),
                 "monitor_positive_examples": int(monitor_dataset.labels.sum().item()),
                 "monitor_final_loss": monitor_losses[-1],
@@ -230,7 +248,10 @@ def run_meta_selector_dual_track(
             "families": [_family_name(objective) for objective in ROTATION],
             "selection_rule": "minimum_mean_positive_score",
             "attack_policies": "fixed_pretrained",
-            "attack_memory": "current_family_only",
+            "attack_memory_rounds": attack_memory_rounds,
+            "attack_memory": (
+                "cumulative" if attack_memory_rounds == 0 else "windowed"
+            ),
             "legitimate_memory": "fixed_historical",
             "block_threshold": block_threshold,
             "monitor_observation": monitor_observation,

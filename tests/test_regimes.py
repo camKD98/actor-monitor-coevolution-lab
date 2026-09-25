@@ -122,6 +122,7 @@ def test_meta_selector_keeps_fixed_attack_policies(tmp_path):
     )
     assert (tmp_path / "results.json").exists()
     assert result["meta_selector"]["attack_policies"] == "fixed_pretrained"
+    assert result["meta_selector"]["attack_memory_rounds"] == 1
     assert len(result["rounds"]) == 3
     for entry in result["rounds"]:
         assert entry["selected_family"] in {
@@ -135,6 +136,30 @@ def test_meta_selector_keeps_fixed_attack_policies(tmp_path):
             "maintenance_path",
         }
     assert result["regime_classification"]["regime"] == "indeterminate"
+
+
+def test_meta_selector_attack_memory_window(tmp_path):
+    config = replace(
+        DualTrackConfig(),
+        actor_episodes=5,
+        monitor_episodes=6,
+        monitor_epochs=2,
+        max_steps=8,
+    )
+    result = run_meta_selector_dual_track(
+        config,
+        tmp_path,
+        rounds=3,
+        monitor_episodes_per_round=6,
+        eval_episodes=5,
+        attack_memory_rounds=2,
+    )
+    assert result["meta_selector"]["attack_memory_rounds"] == 2
+    assert result["meta_selector"]["attack_memory"] == "windowed"
+    assert all(
+        len(entry["monitor_attack_memory_families"]) == 2
+        for entry in result["rounds"]
+    )
 
 
 def test_meta_selector_partial_state_mask(tmp_path):
