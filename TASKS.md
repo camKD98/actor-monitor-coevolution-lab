@@ -4,11 +4,10 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Add structurally diverse attack families and held-out variants
-  - Added a trained `DELETE_RECORDS` attack with the same access/share escalation state but a distinct final action.
-  - Monitor training/validation now contains direct override and deletion; exfiltration remains entirely held out.
-  - Seed-17 exploratory run raises held-out exfiltration above 0.9, but the validation-selected threshold remains near 0.999 and still misses it.
-  - Next: commit and run the canonical five-seed evaluation without retuning on exfiltration.
+- [ ] Separate attack families across train, validation, and final evaluation
+  - Diverse direct+deletion training improves fixed-threshold exfiltration detection but IID validation still selects thresholds near 1.0 and misses 500/500 held-out attacks.
+  - Train the monitor on direct override, select thresholds on deletion, and reserve exfiltration only for final evaluation.
+  - Keep safety/collaborative negatives in both train and validation evidence channels.
 
 ## Next
 
