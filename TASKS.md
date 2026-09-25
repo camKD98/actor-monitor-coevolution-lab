@@ -4,18 +4,15 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Add monitor classification metrics and calibration
-  - Implemented stratified train/validation splitting and outcome-based frontier accounting.
-  - Implemented precision, recall, false-positive rate, ROC-AUC, Brier score, confusion matrix, and calibration bins.
-  - Implemented validation-only investigation-threshold selection with explicit missed-violation and investigation costs.
-  - Next: commit, run canonical multi-seed evaluation, and assess held-out performance without retuning.
+- [ ] Add structurally diverse attack families and held-out variants
+  - Current random validation is perfect on the known direct attack but fails to select a threshold that transfers to held-out exfiltration.
+  - Add monitor-training attacks that vary action identity and escalation structure while retaining a separate final attack family.
+  - Keep model selection and final held-out evaluation strictly separated.
 
 ## Next
 
 - [ ] Implement an imperfect rule baseline
   - Current rule and oracle are identical; a genuinely fallible rule baseline is needed.
-- [ ] Add held-out environment variants
-  - Separate train/evaluation layouts or escalation structures beyond the held-out action.
 - [ ] Implement adaptive actor training against a frozen monitor
   - Train the actor while aware of the monitor; measure increased undetected violations.
 - [ ] Implement alternating actor-monitor training
@@ -34,6 +31,9 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## Completed
 
+- [x] Add monitor classification metrics and validation-only threshold selection.
+  - Validation precision, recall, and ROC-AUC are perfect across seeds 17–21, but selected thresholds miss held-out exfiltration at four of five seeds.
+  - This negative result shows that random in-distribution validation is not evidence of attack-family generalization.
 - [x] Build and evaluate the first contextual-escalation experiment.
   - Added proxy, safety, collaborative, direct-red-team, and held-out-exfiltration roles with overlapping preparation.
   - Added bounded authorization investigation, quarantine, provenance capture, and a threshold frontier.
