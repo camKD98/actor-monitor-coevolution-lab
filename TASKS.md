@@ -4,11 +4,10 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Separate attack families across train, validation, and final evaluation
-  - Monitor training now uses direct override; threshold selection uses deletion; exfiltration remains final-only.
-  - Safety/collaborative negatives are collected independently for train and validation.
-  - Seed-17 exploratory validation selects threshold 0.128 and catches held-out exfiltration, unlike the former IID near-1.0 threshold.
-  - Next: commit and run the canonical five-seed evaluation without retuning.
+- [ ] Make validation support match frozen-policy deployment
+  - Three-family split catches held-out exfiltration at 4/5 seeds, improving substantially over IID threshold selection.
+  - Validation recall is 1.0, but deterministic deletion deployment still fails at 2/5 seeds because sampled validation trajectories differ in state/time support.
+  - Collect complete frozen-policy validation trajectories before selecting thresholds, while retaining exfiltration as final-only.
 
 ## Next
 

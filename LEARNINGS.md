@@ -61,6 +61,7 @@ Run the CLI:
 - Stratified in-distribution validation is perfect at every tested seed (precision/recall/ROC-AUC 1.0, FPR 0), selecting thresholds around 0.99994–0.99997. Those thresholds miss held-out exfiltration at four of five seeds (400/500 violations), demonstrating severe attack-family shift despite apparently perfect calibration.
 - Threshold selection must use structurally diverse validation attacks or an explicit conservative/defer policy; random samples from known attack families are insufficient.
 - Adding deletion to direct-attack monitor training improves fixed 0.9 held-out exfiltration detection from 1/5 to 3/5 seeds, while a post-hoc 0.25 threshold catches 5/5. IID validation still selects near-1.0 thresholds and misses 5/5, so attack diversity in training alone does not solve model selection.
+- Strict direct-train/deletion-validation/exfiltration-test separation improves selected-threshold held-out detection to 4/5 seeds. However, deletion validation recall is 1.0 while deterministic deletion deployment fails at 2/5 seeds because random validation collection does not cover the frozen policy's exact state/time trajectory.
 - Active tasks and next steps are tracked in `TASKS.md`.
 
 ## Known issues
