@@ -5,6 +5,7 @@ from pathlib import Path
 
 import torch
 
+from alignment.alternating import run_alternating_dual_track
 from alignment.config import ContextualConfig, DualTrackConfig, ExperimentConfig
 from alignment.contextual_experiment import (
     collect_contextual_monitor_data,
@@ -367,18 +368,21 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="alignment-lab")
     parser.add_argument(
         "--experiment",
-        choices=("baseline", "contextual", "dual_track"),
+        choices=("baseline", "contextual", "dual_track", "dual_track_alternating"),
         default="baseline",
     )
     parser.add_argument("--output", type=Path, default=Path("runs/baseline"))
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--actor-episodes", type=int, default=1500)
     parser.add_argument("--monitor-episodes", type=int, default=500)
+    parser.add_argument("--rounds", type=int, default=10)
+    parser.add_argument("--round-episodes", type=int, default=500)
     args = parser.parse_args()
     config_types = {
         "baseline": ExperimentConfig,
         "contextual": ContextualConfig,
         "dual_track": DualTrackConfig,
+        "dual_track_alternating": DualTrackConfig,
     }
     config_type = config_types[args.experiment]
     config = replace(
@@ -392,8 +396,17 @@ def main() -> None:
         "contextual": run_contextual_experiment,
         "dual_track": run_dual_track_experiment,
     }
-    run = runners[args.experiment]
-    print(json.dumps(run(config, args.output), indent=2))
+    if args.experiment == "dual_track_alternating":
+        result = run_alternating_dual_track(
+            config,
+            args.output,
+            rounds=args.rounds,
+            episodes_per_round=args.round_episodes,
+            monitor_episodes_per_round=args.monitor_episodes,
+        )
+    else:
+        result = runners[args.experiment](config, args.output)
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":
