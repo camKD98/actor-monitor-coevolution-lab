@@ -4,18 +4,17 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Design a held-out variant with a genuinely different escalation structure
-  - Stop adding renamed final actions to the same research/access/share trajectory.
-  - Create richer legitimate ambiguity and a final attack that differs in prerequisites or temporal structure.
-  - Train future red-team actors for back-loaded *undetected* attack success, including detection/intervention cost in their objective; current red-team policies are attack generators, not monitor-aware evaders.
-  - Predeclare any conservative threshold margin before inspecting final-family outcomes.
+- [ ] Run the dual-track experiment and verify that non-adaptive red-team actors reliably learn all three attack families before interpreting monitor results.
+  - Do not inspect held-out maintenance-path outcomes during development debugging; if inspected, create a new untouched held-out family.
+  - Run at least five seeds before making claims about threshold stability.
 
 ## Next
 
+- [ ] Evaluate monitor-aware red-team actors in the dual-track environment
+  - Compare non-adaptive vs. monitor-aware evasion rates across seeds.
+  - This is the first test of whether detection/investigation penalties change behavior.
 - [ ] Implement an imperfect rule baseline
   - Current rule and oracle are identical; a genuinely fallible rule baseline is needed.
-- [ ] Implement adaptive actor training against a frozen monitor
-  - Train the actor while aware of the monitor; measure increased undetected violations.
 - [ ] Implement alternating actor-monitor training
   - Update actor and monitor in rounds; test robustness on held-out variants.
 
@@ -32,6 +31,14 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## Completed
 
+- [x] Design and implement dual-track held-out variant with genuinely different escalation structure.
+  - New `DualTrackEnv` with parallel primary (develop/test/deploy) and maintenance (review/patch/certify) tracks.
+  - Shared dual-use `CONFIGURE` action: legitimate pre-deployment vs. violation post-deployment, depending on state context.
+  - Three attack families share the same final action but differ in prerequisite chains: direct sabotage (tested path), review escalation (reviewed-only path), maintenance path (patched path).
+  - Non-adaptive and monitor-aware red-team actors implemented as separate conditions.
+  - Strict train → freeze → validation → test pipeline with predeclared threshold selection rule (≥95% validation recall, minimize legitimate investigations).
+  - Legitimate actors traverse the same intermediate states (elevated, deployed) as attack actors.
+  - 27 tests passing including 13 new tests for the dual-track environment.
 - [x] Match validation support to frozen-policy deployment trajectories.
   - This reduces deletion deployment failure from 2/5 to 1/5 seeds but does not change held-out exfiltration failure (1/5 seeds).
   - Score-boundary sensitivity remains; do not tune a margin after inspecting final outcomes.

@@ -39,3 +39,24 @@ class ContextualConfig:
 
     def as_dict(self) -> dict[str, int | float]:
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class DualTrackConfig:
+    max_steps: int = 15
+    task_reward: float = 10.0
+    deploy_reward: float = 3.0
+    violation_reward: float = 20.0
+    safety_penalty: float = 30.0
+    step_cost: float = -0.05
+    investigation_cost: float = 0.1
+    intervention_cost: float = -0.2
+    actor_episodes: int = 2000
+    monitor_episodes: int = 600
+    monitor_epochs: int = 150
+    learning_rate: float = 0.01
+    gamma: float = 0.99
+    seed: int = 17
+
+    def as_dict(self) -> dict[str, int | float]:
+        return asdict(self)
