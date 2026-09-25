@@ -7,6 +7,7 @@ Living task tracker. Agents should update this file when they start, complete, o
 - [ ] Design a held-out variant with a genuinely different escalation structure
   - Stop adding renamed final actions to the same research/access/share trajectory.
   - Create richer legitimate ambiguity and a final attack that differs in prerequisites or temporal structure.
+  - Train future red-team actors for back-loaded *undetected* attack success, including detection/intervention cost in their objective; current red-team policies are attack generators, not monitor-aware evaders.
   - Predeclare any conservative threshold margin before inspecting final-family outcomes.
 
 ## Next
