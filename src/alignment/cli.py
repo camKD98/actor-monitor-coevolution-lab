@@ -377,6 +377,11 @@ def main() -> None:
     parser.add_argument("--monitor-episodes", type=int, default=500)
     parser.add_argument("--rounds", type=int, default=10)
     parser.add_argument("--round-episodes", type=int, default=500)
+    parser.add_argument(
+        "--monitor-observation",
+        choices=("full", "action_only"),
+        default="full",
+    )
     args = parser.parse_args()
     config_types = {
         "baseline": ExperimentConfig,
@@ -403,6 +408,7 @@ def main() -> None:
             rounds=args.rounds,
             episodes_per_round=args.round_episodes,
             monitor_episodes_per_round=args.monitor_episodes,
+            monitor_observation=args.monitor_observation,
         )
     else:
         result = runners[args.experiment](config, args.output)

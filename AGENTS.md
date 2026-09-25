@@ -42,6 +42,15 @@ Treat this repository as the basis of a future research paper. Any result used t
 - If a result was produced before provenance capture or from a dirty tree, label it exploratory and rerun from a clean commit before citing it as canonical.
 - Never overwrite a canonical run directory. Use a new run ID for reruns or changed code/configuration.
 - Paper tables and plots must be generated from logged artifacts whose hashes match the ledger, not from remembered or manually transcribed values.
+- Avoid running a full multi-seed sweep from a dirty tree when the intended result may become canonical. Before committing, use only the smallest smoke run needed to validate execution and artifact structure. Then ask for commit approval, commit the verified experiment code, and run the full sweep once from that clean commit. A later commit cannot retroactively make a dirty-tree run canonical, even if the relevant source files appear unchanged.
+
+## Parallel experiment execution
+
+- Parallelize independent, relatively cheap experiment runs (especially separate random seeds) when they have no shared mutable outputs.
+- On this PC (AMD Ryzen 5 3600, 6 physical cores / 12 logical processors, 16 GB RAM), use at most **four concurrent experiment workers** by default. This preserves headroom for Windows and Devin while materially reducing sweep time.
+- Give every worker a distinct output directory and log file. Never run concurrent workers against the same artifact directory.
+- Launch additional queued runs only when a worker slot becomes available, and verify each process exit code plus the presence and parseability of `results.json` before treating the batch as complete.
+- Do not generalize this limit to memory-heavy models, GPU workloads, database mutations, or tasks with shared state. Reduce concurrency when per-worker memory use is substantial or when the machine becomes unresponsive.
 
 ## Task scoping and handoff
 

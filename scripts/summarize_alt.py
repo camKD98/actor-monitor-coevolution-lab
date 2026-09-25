@@ -4,7 +4,8 @@ import sys
 
 root = sys.argv[1] if len(sys.argv) > 1 else r"C:\Users\cambr\OneDrive - King's College London\Documents\projects\Alignment\runs"
 for path in sorted(glob.glob(root + r"\DT-ALT-S*\results.json")):
-    r = json.load(open(path))
+    with open(path) as f:
+        r = json.load(f)
     seed = r["config"]["seed"]
     print(f"=== seed {seed} ===")
     for rd in r["rounds"]:

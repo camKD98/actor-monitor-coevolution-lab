@@ -73,3 +73,32 @@ def test_alternating_final_evaluation_structure(tmp_path):
     assert result["alternating"]["co_train_objective"] == "red_direct_sabotage"
     assert result["alternating"]["held_out_family"] == "maintenance_path"
     assert "threshold_selection" in result["training"]
+
+
+def test_alternating_action_only_monitor(tmp_path):
+    config = replace(
+        DualTrackConfig(),
+        actor_episodes=5,
+        monitor_episodes=6,
+        monitor_epochs=2,
+        max_steps=8,
+    )
+    result = run_alternating_dual_track(
+        config,
+        tmp_path,
+        rounds=2,
+        episodes_per_round=4,
+        monitor_episodes_per_round=6,
+        eval_episodes=5,
+        monitor_observation="action_only",
+    )
+    assert result["alternating"]["monitor_observation"] == "action_only"
+    assert len(result["rounds"]) == 2
+    assert set(result["evaluation"]) == {
+        "proxy",
+        "safety",
+        "collaborative",
+        "red_review_escalation",
+        "red_maintenance_path",
+        "co_trained_direct_sabotage",
+    }

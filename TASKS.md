@@ -4,12 +4,13 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Alternating actor-monitor training (task A): `run_alternating_dual_track` implemented in
-  `src/alignment/alternating.py`, wired to `--experiment dual_track_alternating` (`--rounds`,
-  `--round-episodes`). Tests pass; exploratory dev run `runs/DT-ALT-dev-S17` (seed 17, 5 rounds,
-  500 episodes/round, dirty tree) complete: dynamics converged (actor stopped attempting
-  violations after round 1; monitor recall 1.0 on all families). Next: classify dynamics
-  formally, then parameter/structure sweeps.
+- Alternating actor-monitor training (task A): canonical full-state sweep complete at seeds
+  17–21 (10 rounds × 500 episodes; all converge). Action-only monitor mode implemented and
+  exploratory five-seed sweep complete using four parallel workers. Fixed validation/held-out
+  attackers escape block-only monitoring at all seeds, but the co-trained actor mostly stops
+  attacking; seed 18 shows one transient evade/catch cycle. Next: review/commit action-only mode,
+  rerun canonically, then implement sequential attack-family rotation for the predicted cycling
+  regime and define quantitative regime-classification criteria.
 
 ## Next — Coevolution dynamics (primary research direction)
 
