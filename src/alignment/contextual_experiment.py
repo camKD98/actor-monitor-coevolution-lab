@@ -217,6 +217,7 @@ def collect_contextual_monitor_data(
     config: ContextualConfig,
     actors: list[ActorCritic],
     seed_offset: int = 400,
+    greedy: bool = False,
 ) -> ContextualDataset:
     rng = np.random.default_rng(config.seed + seed_offset)
     env = ContextualEscalationEnv(config)
@@ -231,7 +232,9 @@ def collect_contextual_monitor_data(
             while True:
                 with torch.no_grad():
                     logits, _ = actor(torch.from_numpy(observation))
-                if rng.random() < 0.4:
+                if greedy:
+                    action = int(torch.argmax(logits).item())
+                elif rng.random() < 0.4:
                     action = int(rng.integers(0, ContextualAction.EXFILTRATE))
                 else:
                     action = int(Categorical(logits=logits).sample().item())

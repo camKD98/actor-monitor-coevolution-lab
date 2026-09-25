@@ -5,9 +5,10 @@ Living task tracker. Agents should update this file when they start, complete, o
 ## In progress
 
 - [ ] Make validation support match frozen-policy deployment
-  - Three-family split catches held-out exfiltration at 4/5 seeds, improving substantially over IID threshold selection.
-  - Validation recall is 1.0, but deterministic deletion deployment still fails at 2/5 seeds because sampled validation trajectories differ in state/time support.
-  - Collect complete frozen-policy validation trajectories before selecting thresholds, while retaining exfiltration as final-only.
+  - Validation now uses complete greedy safety, collaborative, and deletion trajectories.
+  - Seed-21 exploratory run catches deterministic deletion at the selected threshold, resolving the sampled-support mismatch.
+  - Held-out exfiltration still fails at seed 21, preserving the distinction between validation coverage and final-family transfer.
+  - Next: commit and run seeds 17–21 canonically.
 
 ## Next
 

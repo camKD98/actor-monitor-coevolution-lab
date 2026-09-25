@@ -82,6 +82,7 @@ def run_contextual_experiment(config: ContextualConfig, output: Path) -> dict[st
         config,
         [actors["safety"], actors["collaborative"], actors["red_deletion"]],
         seed_offset=450,
+        greedy=True,
     )
     monitor, monitor_losses = train_contextual_monitor(config, train_dataset)
     validation_scores = contextual_monitor_scores(monitor, validation_dataset)
