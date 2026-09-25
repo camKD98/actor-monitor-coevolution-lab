@@ -4,13 +4,12 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Alternating actor-monitor training (task A): canonical full-state sweep complete at seeds
-  17–21 (10 rounds × 500 episodes; all converge). Action-only monitor mode implemented and
-  exploratory five-seed sweep complete using four parallel workers. Fixed validation/held-out
-  attackers escape block-only monitoring at all seeds, but the co-trained actor mostly stops
-  attacking; seed 18 shows one transient evade/catch cycle. Next: review/commit action-only mode,
-  rerun canonically, then implement sequential attack-family rotation for the predicted cycling
-  regime and define quantitative regime-classification criteria.
+- Sequential attack-family rotation and numerical regime classification are implemented and
+  verified (36 tests). The rotating monitor retains fixed legitimate history but trains on only
+  the current attack family, exposing forgetting across direct/review/maintenance families.
+  A minimal 3-round smoke run shows the expected lag (maintenance evades before its update and
+  is caught afterward) but is too short to classify. Next: commit, run a canonical multi-seed
+  rotation sweep with at least 12 rounds, then validate/refine the predeclared criteria.
 
 ## Next — Coevolution dynamics (primary research direction)
 
@@ -19,17 +18,18 @@ Living task tracker. Agents should update this file when they start, complete, o
   - Train actor for N episodes against frozen monitor → retrain monitor on new behavior → repeat K rounds
   - Record per-round metrics: actor violation rate, monitor recall, evasion rate, returns
   - Support configurable rounds, episodes-per-round, and which actor role to co-train
-- [ ] Run initial alternating training sweep (dual-track, seeds 17–21)
+- [x] Run initial alternating training sweep (dual-track, seeds 17–21)
   - Start with 10 rounds, 500 episodes/round
   - Classify dynamics: does it converge, cycle, or allow escape?
 - [ ] Run parameter sweeps varying rounds (5, 10, 20, 50) and episodes/round (100, 500, 1500)
 - [ ] Run environment structure variations:
-  - Partial monitor observation (action-only vs. full state)
+  - [x] Partial monitor observation (action-only vs. full state)
+  - [x] Sequential attack-family rotation with current-family-only attack memory
   - Modified action space (add/remove actions to change mimicry capacity)
   - Varied information asymmetry
 
 ### C. Regime classification metrics (bridges A and B)
-- [ ] Define quantitative regime classification criteria
+- [x] Define quantitative regime classification criteria
   - Convergence: per-round violation rate and recall variance below threshold for last N rounds
   - Cycling: autocorrelation of per-round metrics is significantly negative at lag 1
   - Escape: monotonic increase in actor violation rate over last N rounds

@@ -28,6 +28,7 @@ from alignment.dual_track_experiment import (
 )
 from alignment.evaluate import baseline_monitor, evaluate_actor
 from alignment.provenance import collect_provenance
+from alignment.rotating import run_rotating_dual_track
 from alignment.train_agent import train_actor
 from alignment.train_monitor import collect_monitor_data, learned_monitor, train_monitor
 
@@ -368,7 +369,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="alignment-lab")
     parser.add_argument(
         "--experiment",
-        choices=("baseline", "contextual", "dual_track", "dual_track_alternating"),
+        choices=(
+            "baseline",
+            "contextual",
+            "dual_track",
+            "dual_track_alternating",
+            "dual_track_rotating",
+        ),
         default="baseline",
     )
     parser.add_argument("--output", type=Path, default=Path("runs/baseline"))
@@ -388,6 +395,7 @@ def main() -> None:
         "contextual": ContextualConfig,
         "dual_track": DualTrackConfig,
         "dual_track_alternating": DualTrackConfig,
+        "dual_track_rotating": DualTrackConfig,
     }
     config_type = config_types[args.experiment]
     config = replace(
@@ -409,6 +417,14 @@ def main() -> None:
             episodes_per_round=args.round_episodes,
             monitor_episodes_per_round=args.monitor_episodes,
             monitor_observation=args.monitor_observation,
+        )
+    elif args.experiment == "dual_track_rotating":
+        result = run_rotating_dual_track(
+            config,
+            args.output,
+            rounds=args.rounds,
+            episodes_per_round=args.round_episodes,
+            monitor_episodes_per_round=args.monitor_episodes,
         )
     else:
         result = runners[args.experiment](config, args.output)
