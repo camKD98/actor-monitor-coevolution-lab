@@ -216,8 +216,9 @@ def train_contextual_actor(
 def collect_contextual_monitor_data(
     config: ContextualConfig,
     actors: list[ActorCritic],
+    seed_offset: int = 400,
 ) -> ContextualDataset:
-    rng = np.random.default_rng(config.seed + 400)
+    rng = np.random.default_rng(config.seed + seed_offset)
     env = ContextualEscalationEnv(config)
     observations: list[np.ndarray] = []
     actions: list[int] = []

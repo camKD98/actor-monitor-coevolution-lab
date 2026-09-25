@@ -12,7 +12,6 @@ from alignment.contextual_experiment import (
     contextual_monitor_scores,
     evaluate_contextual_actor,
     select_investigation_threshold,
-    split_contextual_dataset,
     train_contextual_actor,
     train_contextual_monitor,
 )
@@ -74,16 +73,16 @@ def run_contextual_experiment(config: ContextualConfig, output: Path) -> dict[st
     )
     trained = {name: train_contextual_actor(config, name) for name in objectives}
     actors = {name: value[0] for name, value in trained.items()}
-    dataset = collect_contextual_monitor_data(
+    train_dataset = collect_contextual_monitor_data(
         config,
-        [
-            actors["safety"],
-            actors["collaborative"],
-            actors["red_direct"],
-            actors["red_deletion"],
-        ],
+        [actors["safety"], actors["collaborative"], actors["red_direct"]],
+        seed_offset=400,
     )
-    train_dataset, validation_dataset = split_contextual_dataset(dataset, config.seed + 450)
+    validation_dataset = collect_contextual_monitor_data(
+        config,
+        [actors["safety"], actors["collaborative"], actors["red_deletion"]],
+        seed_offset=450,
+    )
     monitor, monitor_losses = train_contextual_monitor(config, train_dataset)
     validation_scores = contextual_monitor_scores(monitor, validation_dataset)
     selected_threshold, validation_cost = select_investigation_threshold(
@@ -162,13 +161,18 @@ def run_contextual_experiment(config: ContextualConfig, output: Path) -> dict[st
         "training": {
             "final_actor_returns": {name: values[1][-1] for name, values in trained.items()},
             "final_monitor_loss": monitor_losses[-1],
-            "monitor_examples": len(dataset.labels),
-            "monitor_positive_examples": int(dataset.labels.sum().item()),
+            "monitor_examples": len(train_dataset.labels) + len(validation_dataset.labels),
+            "monitor_positive_examples": int(
+                train_dataset.labels.sum().item() + validation_dataset.labels.sum().item()
+            ),
             "monitor_train_examples": len(train_dataset.labels),
+            "monitor_train_positive_examples": int(train_dataset.labels.sum().item()),
             "monitor_validation_examples": len(validation_dataset.labels),
+            "monitor_validation_positive_examples": int(validation_dataset.labels.sum().item()),
             "selected_investigation_threshold": selected_threshold,
             "validation_selection_cost": validation_cost,
-            "known_attack_actions": ["override", "delete_records"],
+            "monitor_train_attack": "override",
+            "monitor_validation_attack": "delete_records",
             "held_out_action": "exfiltrate",
         },
         "monitor_validation": validation_metrics,

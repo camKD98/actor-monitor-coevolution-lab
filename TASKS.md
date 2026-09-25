@@ -5,9 +5,10 @@ Living task tracker. Agents should update this file when they start, complete, o
 ## In progress
 
 - [ ] Separate attack families across train, validation, and final evaluation
-  - Diverse direct+deletion training improves fixed-threshold exfiltration detection but IID validation still selects thresholds near 1.0 and misses 500/500 held-out attacks.
-  - Train the monitor on direct override, select thresholds on deletion, and reserve exfiltration only for final evaluation.
-  - Keep safety/collaborative negatives in both train and validation evidence channels.
+  - Monitor training now uses direct override; threshold selection uses deletion; exfiltration remains final-only.
+  - Safety/collaborative negatives are collected independently for train and validation.
+  - Seed-17 exploratory validation selects threshold 0.128 and catches held-out exfiltration, unlike the former IID near-1.0 threshold.
+  - Next: commit and run the canonical five-seed evaluation without retuning.
 
 ## Next
 
