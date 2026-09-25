@@ -4,11 +4,10 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Make validation support match frozen-policy deployment
-  - Validation now uses complete greedy safety, collaborative, and deletion trajectories.
-  - Seed-21 exploratory run catches deterministic deletion at the selected threshold, resolving the sampled-support mismatch.
-  - Held-out exfiltration still fails at seed 21, preserving the distinction between validation coverage and final-family transfer.
-  - Next: commit and run seeds 17–21 canonically.
+- [ ] Design a held-out variant with a genuinely different escalation structure
+  - Stop adding renamed final actions to the same research/access/share trajectory.
+  - Create richer legitimate ambiguity and a final attack that differs in prerequisites or temporal structure.
+  - Predeclare any conservative threshold margin before inspecting final-family outcomes.
 
 ## Next
 
@@ -32,6 +31,9 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## Completed
 
+- [x] Match validation support to frozen-policy deployment trajectories.
+  - This reduces deletion deployment failure from 2/5 to 1/5 seeds but does not change held-out exfiltration failure (1/5 seeds).
+  - Score-boundary sensitivity remains; do not tune a margin after inspecting final outcomes.
 - [x] Add monitor classification metrics and validation-only threshold selection.
   - Validation precision, recall, and ROC-AUC are perfect across seeds 17–21, but selected thresholds miss held-out exfiltration at four of five seeds.
   - This negative result shows that random in-distribution validation is not evidence of attack-family generalization.
