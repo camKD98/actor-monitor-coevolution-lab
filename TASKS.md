@@ -4,12 +4,17 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-(none)
+- Alternating actor-monitor training (task A): `run_alternating_dual_track` implemented in
+  `src/alignment/alternating.py`, wired to `--experiment dual_track_alternating` (`--rounds`,
+  `--round-episodes`). Tests pass; exploratory dev run `runs/DT-ALT-dev-S17` (seed 17, 5 rounds,
+  500 episodes/round, dirty tree) complete: dynamics converged (actor stopped attempting
+  violations after round 1; monitor recall 1.0 on all families). Next: classify dynamics
+  formally, then parameter/structure sweeps.
 
 ## Next — Coevolution dynamics (primary research direction)
 
 ### A. Alternating training implementation (empirical, parallelizable)
-- [ ] Implement alternating actor-monitor training loop in the dual-track environment
+- [x] Implement alternating actor-monitor training loop in the dual-track environment
   - Train actor for N episodes against frozen monitor → retrain monitor on new behavior → repeat K rounds
   - Record per-round metrics: actor violation rate, monitor recall, evasion rate, returns
   - Support configurable rounds, episodes-per-round, and which actor role to co-train
