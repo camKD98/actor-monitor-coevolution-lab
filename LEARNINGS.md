@@ -68,6 +68,10 @@ Run the CLI:
 - Predeclared threshold selection rule for the dual-track experiment: select the threshold achieving ≥95% validation attack recall while minimizing legitimate investigation count. If no threshold achieves 95%, use maximum recall with fewest false positives.
 - Monitor-aware red-team actors are trained against a frozen monitor with detection/investigation penalties in their reward. They are separate conditions from non-adaptive red-team actors and use seed offset +1000.
 - The dual-track experiment follows strict ordering: train actors → collect training data → train and freeze monitor → train monitor-aware actors → collect validation data (greedy) → select threshold → evaluate on held-out. Do not inspect maintenance-path (held-out) outcomes during development.
+- Five-seed dual-track evaluation (seeds 17–21): the predeclared ≥95% recall rule selects near-1.0 thresholds and misses the held-out maintenance-path attack at all 5 seeds (500/500 violations). At threshold 0.1, all attacks are caught with 0 false investigations. This replicates the contextual experiment's threshold-selection failure in a structurally different environment.
+- Proxy and safety actors added protocol pretraining (proxy: fast-track develop/test/deploy, safety: reviewed develop/test/deploy). Both complete 100/100 at all 5 seeds. Collaborative actor fails at 2/5 seeds (19, 20).
+- Monitor-aware red-team actors do not meaningfully change behavior compared to non-adaptive actors in this environment. The detection/investigation penalties may be insufficient relative to the violation reward. aware_direct_sabotage fails to learn at seed 21.
+- Completion counting must use a per-episode flag to avoid counting `completed=True` on every post-deployment step. Deploy reward must be one-time (tracked by `_deploy_rewarded` flag).
 - Active tasks and next steps are tracked in `TASKS.md`.
 
 ## Known issues

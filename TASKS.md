@@ -4,15 +4,19 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- [ ] Run the dual-track experiment and verify that non-adaptive red-team actors reliably learn all three attack families before interpreting monitor results.
-  - Do not inspect held-out maintenance-path outcomes during development debugging; if inspected, create a new untouched held-out family.
-  - Run at least five seeds before making claims about threshold stability.
+(none)
 
 ## Next
 
-- [ ] Evaluate monitor-aware red-team actors in the dual-track environment
-  - Compare non-adaptive vs. monitor-aware evasion rates across seeds.
-  - This is the first test of whether detection/investigation penalties change behavior.
+- [ ] Investigate why monitor-aware red-team actors do not meaningfully change behavior
+  - Detection penalty (5.0) and investigation penalty (3.0) may be too small relative to violation reward (20.0).
+  - Try increasing penalties or switching to a multiplicative stealth bonus.
+  - aware_direct_sabotage fails to learn at seed 21; diagnose whether monitor penalty causes collapse.
+- [ ] Evaluate a threshold rule that incorporates investigation cost/benefit tradeoff
+  - Current predeclared recall rule drives threshold to near-1.0 and misses held-out at all 5 seeds.
+  - Consider a cost-weighted rule, quantile-based conservative threshold, or explicit investigation budget.
+- [ ] Fix collaborative actor training instability (0/100 completions at seeds 19, 20)
+  - May need more episodes, lower entropy coefficient, or adjusted collaborative reward shaping.
 - [ ] Implement an imperfect rule baseline
   - Current rule and oracle are identical; a genuinely fallible rule baseline is needed.
 - [ ] Implement alternating actor-monitor training
@@ -31,6 +35,12 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## Completed
 
+- [x] Run five-seed dual-track evaluation (DT-adaa83f-S17–S21).
+  - All three non-adaptive red-team families reliably learn their attacks (100/100 at all 5 seeds).
+  - Predeclared recall rule selects near-1.0 thresholds; held-out maintenance-path evades at all 5 seeds (500/500).
+  - Conservative threshold 0.1 catches all attacks with 0 false investigations on legitimate actors.
+  - Monitor-aware actors do not meaningfully differ from non-adaptive actors.
+  - Collaborative actor fails at 2/5 seeds; aware_direct_sabotage fails at 1/5 seeds.
 - [x] Design and implement dual-track held-out variant with genuinely different escalation structure.
   - New `DualTrackEnv` with parallel primary (develop/test/deploy) and maintenance (review/patch/certify) tracks.
   - Shared dual-use `CONFIGURE` action: legitimate pre-deployment vs. violation post-deployment, depending on state context.
