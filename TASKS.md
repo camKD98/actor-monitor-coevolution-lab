@@ -22,23 +22,6 @@ Living task tracker. Agents should update this file when they start, complete, o
   - Modified action space (add/remove actions to change mimicry capacity)
   - Varied information asymmetry
 
-### B. Formal game-theoretic analysis (theory, parallelizable with A)
-- [ ] Formalize the actor-monitor interaction as an extensive-form game
-  - Actor: private intent, public actions; Monitor: observes actions + partial state, emits risk score
-  - Define payoff structure including intervention cost, investigation cost, violation reward
-  - Model as Stackelberg game (monitor commits, actor best-responds) and simultaneous game (alternating updates)
-- [ ] Characterize Nash equilibria in the dual-track environment
-  - Enumerate feasible actor strategies (attack paths) and monitor strategies (threshold + investigation rules)
-  - Determine when pure strategy equilibria exist vs. only mixed
-- [ ] Derive structural conditions predicting convergence/cycling/escape
-  - Monitoring coverage ratio: distinguishable attack paths / total attack paths
-  - Mimicry capacity: existence of observationally identical attack/legitimate paths
-  - Adaptation rate asymmetry: relative learning speed of actor vs. monitor
-- [ ] Connect to existing theory
-  - Balcan et al. (2023) non-convergence in adversarial robustness
-  - Red Queen dynamics (arms race vs. trench warfare)
-  - Thomson et al. (2024) AI-Control Games static analysis
-
 ### C. Regime classification metrics (bridges A and B)
 - [ ] Define quantitative regime classification criteria
   - Convergence: per-round violation rate and recall variance below threshold for last N rounds
@@ -57,6 +40,12 @@ Living task tracker. Agents should update this file when they start, complete, o
 - [ ] Explicit CUDA / device selection
 
 ## Completed
+
+- [x] Formal game-theoretic analysis (B) — see `docs/formal_analysis.md`.
+  - Static actor-monitor game formalized as an extensive-form / POSG game with private actor type and partial monitor observation.
+  - Nash-equilibrium characterization: pure catch-all equilibrium exists iff attack and legitimate observable features are disjoint; mixed equilibria when they overlap or investigation costs bind.
+  - Dynamic alternating training modeled as iterated best response; convergence/cycling/escape conditions tied to monitoring coverage, mimicry capacity, and adaptation-rate asymmetry.
+  - Connections to Thomson et al. (2024), Balcan et al. (2023), Mertikopoulos et al. (2018), Dieckmann et al. (1995), Zhang (2025/2026).
 
 - [x] Run five-seed dual-track evaluation (DT-adaa83f-S17–S21).
   - All three non-adaptive red-team families reliably learn their attacks (100/100 at all 5 seeds).
