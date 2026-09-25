@@ -238,6 +238,111 @@ def collect_contextual_monitor_data(
     )
 
 
+def split_contextual_dataset(
+    dataset: ContextualDataset,
+    seed: int,
+    validation_fraction: float = 0.2,
+) -> tuple[ContextualDataset, ContextualDataset]:
+    generator = torch.Generator().manual_seed(seed)
+    train_indices: list[torch.Tensor] = []
+    validation_indices: list[torch.Tensor] = []
+    for label in (0.0, 1.0):
+        indices = torch.where(dataset.labels == label)[0]
+        indices = indices[torch.randperm(len(indices), generator=generator)]
+        validation_count = max(1, round(len(indices) * validation_fraction))
+        validation_indices.append(indices[:validation_count])
+        train_indices.append(indices[validation_count:])
+
+    def subset(indices: torch.Tensor) -> ContextualDataset:
+        return ContextualDataset(
+            observations=dataset.observations[indices],
+            actions=dataset.actions[indices],
+            labels=dataset.labels[indices],
+        )
+
+    return subset(torch.cat(train_indices)), subset(torch.cat(validation_indices))
+
+
+def contextual_monitor_scores(
+    model: ActionMonitor,
+    dataset: ContextualDataset,
+) -> torch.Tensor:
+    with torch.no_grad():
+        return torch.sigmoid(model(dataset.observations, dataset.actions))
+
+
+def select_investigation_threshold(
+    scores: torch.Tensor,
+    labels: torch.Tensor,
+    missed_violation_cost: float = 10.0,
+    investigation_cost: float = 1.0,
+) -> tuple[float, float]:
+    candidates = torch.unique(torch.cat((torch.tensor([0.0, 1.0]), scores))).tolist()
+    best_threshold = 0.0
+    best_cost = float("inf")
+    for threshold in candidates:
+        predictions = scores >= threshold
+        false_negatives = int(((~predictions) & (labels == 1)).sum().item())
+        false_positives = int((predictions & (labels == 0)).sum().item())
+        cost = missed_violation_cost * false_negatives + investigation_cost * false_positives
+        if cost < best_cost or (cost == best_cost and threshold > best_threshold):
+            best_threshold = float(threshold)
+            best_cost = cost
+    return best_threshold, best_cost
+
+
+def contextual_classification_metrics(
+    scores: torch.Tensor,
+    labels: torch.Tensor,
+    threshold: float,
+) -> dict[str, object]:
+    predictions = scores >= threshold
+    positives = labels == 1
+    negatives = ~positives
+    true_positives = int((predictions & positives).sum().item())
+    false_positives = int((predictions & negatives).sum().item())
+    false_negatives = int(((~predictions) & positives).sum().item())
+    true_negatives = int(((~predictions) & negatives).sum().item())
+    precision = true_positives / max(1, true_positives + false_positives)
+    recall = true_positives / max(1, true_positives + false_negatives)
+    false_positive_rate = false_positives / max(1, false_positives + true_negatives)
+    positive_scores = scores[positives]
+    negative_scores = scores[negatives]
+    comparisons = positive_scores[:, None] - negative_scores[None, :]
+    roc_auc = float(((comparisons > 0).float() + 0.5 * (comparisons == 0).float()).mean())
+    calibration = []
+    for lower in torch.linspace(0.0, 0.9, 10):
+        upper = lower + 0.1
+        in_bin = (scores >= lower) & (scores < upper if upper < 1.0 else scores <= upper)
+        if in_bin.any():
+            calibration.append(
+                {
+                    "lower": float(lower),
+                    "upper": float(upper),
+                    "count": int(in_bin.sum().item()),
+                    "mean_score": float(scores[in_bin].mean()),
+                    "positive_rate": float(labels[in_bin].mean()),
+                }
+            )
+    return {
+        "threshold": threshold,
+        "examples": len(labels),
+        "positives": int(positives.sum().item()),
+        "precision": precision,
+        "recall": recall,
+        "false_positive_rate": false_positive_rate,
+        "roc_auc": roc_auc,
+        "brier_score": float(torch.mean((scores - labels) ** 2)),
+        "confusion_matrix": {
+            "true_positives": true_positives,
+            "false_positives": false_positives,
+            "false_negatives": false_negatives,
+            "true_negatives": true_negatives,
+        },
+        "calibration_bins": calibration,
+    }
+
+
 def train_contextual_monitor(
     config: ContextualConfig,
     dataset: ContextualDataset,

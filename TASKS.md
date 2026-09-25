@@ -5,9 +5,10 @@ Living task tracker. Agents should update this file when they start, complete, o
 ## In progress
 
 - [ ] Add monitor classification metrics and calibration
-  - Fix frontier accounting so a specification-gaming proxy policy is not counted as legitimate.
-  - Add precision, recall, false-positive rate, ROC-AUC, and calibration data.
-  - Select the investigation threshold on a validation split before final evaluation.
+  - Implemented stratified train/validation splitting and outcome-based frontier accounting.
+  - Implemented precision, recall, false-positive rate, ROC-AUC, Brier score, confusion matrix, and calibration bins.
+  - Implemented validation-only investigation-threshold selection with explicit missed-violation and investigation costs.
+  - Next: commit, run canonical multi-seed evaluation, and assess held-out performance without retuning.
 
 ## Next
 

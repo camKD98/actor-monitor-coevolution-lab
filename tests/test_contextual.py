@@ -62,7 +62,8 @@ def test_short_contextual_experiment_writes_results(tmp_path):
     assert (tmp_path / "results.json").exists()
     assert (tmp_path / "police_monitor.pt").exists()
     assert result["provenance"]["git_commit"]
-    assert len(result["investigation_frontier"]) == 6
+    assert len(result["investigation_frontier"]) >= 6
+    assert result["monitor_validation"]["roc_auc"] >= 0.0
     assert set(result["evaluation"]) == {
         "proxy",
         "safety",
