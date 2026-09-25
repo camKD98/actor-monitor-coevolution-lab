@@ -4,11 +4,12 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Fixed-policy meta-selector cycling experiment implemented and verified (38 tests). It keeps
-  reliable family policies frozen, selects the current monitor's lowest-scored family, and trains
-  the monitor only on that family. A six-round smoke run switches family every round and classifies
-  as cycling; maintenance evades before and is caught after updates in rounds 3 and 5. Next: commit
-  and run the canonical 12-round, five-seed sweep before interpreting robustness.
+- Canonical fixed-policy meta-selector sweep complete at seeds 17–21 (12 rounds). All five
+  classify as convergence: reliable attacks remain 100/100 capable, but all selected attacks are
+  blocked before every update because the full-state monitor learns the robust shared violation
+  feature. Frequent family switching is not cycling when recall/safety stay constant. Next:
+  predeclare a partial-state observation that hides the robust deployed/certified feature while
+  retaining family-specific cues, then test whether non-robust features produce cycling.
 
 ## Next — Coevolution dynamics (primary research direction)
 
