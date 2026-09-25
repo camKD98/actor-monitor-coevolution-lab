@@ -135,3 +135,27 @@ def test_meta_selector_keeps_fixed_attack_policies(tmp_path):
             "maintenance_path",
         }
     assert result["regime_classification"]["regime"] == "indeterminate"
+
+
+def test_meta_selector_partial_state_mask(tmp_path):
+    config = replace(
+        DualTrackConfig(),
+        actor_episodes=5,
+        monitor_episodes=6,
+        monitor_epochs=2,
+        max_steps=8,
+    )
+    result = run_meta_selector_dual_track(
+        config,
+        tmp_path,
+        rounds=3,
+        monitor_episodes_per_round=6,
+        eval_episodes=5,
+        monitor_observation="partial_state",
+    )
+    assert result["meta_selector"]["monitor_observation"] == "partial_state"
+    assert result["meta_selector"]["hidden_observation_features"] == [
+        "deployed",
+        "certified",
+    ]
+    assert len(result["rounds"]) == 3

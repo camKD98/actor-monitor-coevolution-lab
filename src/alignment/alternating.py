@@ -41,7 +41,19 @@ CoTrainObjective = Literal[
     "red_direct_sabotage", "red_review_escalation", "red_maintenance_path"
 ]
 
-MonitorObservation = Literal["full", "action_only"]
+MonitorObservation = Literal["full", "partial_state", "action_only"]
+
+
+class _PartialStateMonitor(torch.nn.Module):
+    def __init__(self, inner: ActionMonitor) -> None:
+        super().__init__()
+        self.inner = inner
+
+    def forward(self, observation: torch.Tensor, action: torch.Tensor) -> torch.Tensor:
+        masked = observation.clone()
+        masked[..., 4] = 0.0
+        masked[..., 6] = 0.0
+        return self.inner(masked, action)
 
 
 class _ActionOnlyMonitor(torch.nn.Module):
@@ -60,12 +72,30 @@ class _ActionOnlyMonitor(torch.nn.Module):
         return self.inner(torch.zeros_like(observation), action)
 
 
-def _mask_dataset(dataset: DualTrackDataset) -> DualTrackDataset:
+def _mask_dataset(
+    dataset: DualTrackDataset, monitor_observation: MonitorObservation
+) -> DualTrackDataset:
+    observations = dataset.observations.clone()
+    if monitor_observation == "action_only":
+        observations.zero_()
+    elif monitor_observation == "partial_state":
+        observations[..., 4] = 0.0
+        observations[..., 6] = 0.0
     return DualTrackDataset(
-        observations=torch.zeros_like(dataset.observations),
+        observations=observations,
         actions=dataset.actions,
         labels=dataset.labels,
     )
+
+
+def _deploy_monitor(
+    monitor: ActionMonitor, monitor_observation: MonitorObservation
+) -> torch.nn.Module:
+    if monitor_observation == "action_only":
+        return _ActionOnlyMonitor(monitor)
+    if monitor_observation == "partial_state":
+        return _PartialStateMonitor(monitor)
+    return monitor
 
 
 def continue_actor_training(
@@ -232,7 +262,7 @@ def run_alternating_dual_track(
     action_only = monitor_observation == "action_only"
 
     def observe(dataset: DualTrackDataset) -> DualTrackDataset:
-        return _mask_dataset(dataset) if action_only else dataset
+        return _mask_dataset(dataset, monitor_observation)
 
     cumulative = [
         observe(
@@ -262,7 +292,7 @@ def run_alternating_dual_track(
     for round_index in range(1, rounds + 1):
         # Actor phase: continue training against the frozen monitor.
         round_seed_offset = 2000 + 100 * round_index
-        frozen_monitor = _ActionOnlyMonitor(monitor) if action_only else monitor
+        frozen_monitor = _deploy_monitor(monitor, monitor_observation)
         train_returns = continue_actor_training(
             config,
             co_train_objective,
@@ -290,7 +320,7 @@ def run_alternating_dual_track(
         monitor, monitor_losses = train_dual_track_monitor(config, monitor_dataset)
 
         # Per-round metrics (against the newly retrained monitor).
-        new_monitor = _ActionOnlyMonitor(monitor) if action_only else monitor
+        new_monitor = _deploy_monitor(monitor, monitor_observation)
         deployed = evaluate_dual_track_actor(
             config, attack_actor, new_monitor,
             episodes=eval_episodes, block_threshold=block_threshold,
@@ -351,7 +381,7 @@ def run_alternating_dual_track(
         validation_scores, validation_dataset.labels, selected_threshold,
     )
 
-    final_monitor = _ActionOnlyMonitor(monitor) if action_only else monitor
+    final_monitor = _deploy_monitor(monitor, monitor_observation)
     all_actors = {**fixed_actors, "co_trained_direct_sabotage": attack_actor}
     evaluation = {
         name: {

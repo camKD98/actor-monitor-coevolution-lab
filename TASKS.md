@@ -4,12 +4,11 @@ Living task tracker. Agents should update this file when they start, complete, o
 
 ## In progress
 
-- Canonical fixed-policy meta-selector sweep complete at seeds 17–21 (12 rounds). All five
-  classify as convergence: reliable attacks remain 100/100 capable, but all selected attacks are
-  blocked before every update because the full-state monitor learns the robust shared violation
-  feature. Frequent family switching is not cycling when recall/safety stay constant. Next:
-  predeclare a partial-state observation that hides the robust deployed/certified feature while
-  retaining family-specific cues, then test whether non-robust features produce cycling.
+- Partial-state meta-selector variation implemented and verified (39 tests). The predeclared mask
+  hides `deployed` and `certified` while retaining prerequisite cues. A six-round smoke run
+  classifies as cycling: every selected family evades the previous monitor, selection switches
+  every round, and retraining catches the selected family in 5/6 rounds. Next: commit, then run
+  the canonical 12-round five-seed sweep before interpreting robustness.
 
 ## Next — Coevolution dynamics (primary research direction)
 
