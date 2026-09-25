@@ -65,6 +65,20 @@ class DualTrackMetrics:
 # ---------------------------------------------------------------------------
 
 PROTOCOLS: dict[str, tuple[DualTrackAction, ...]] = {
+    "proxy": (
+        DualTrackAction.DEVELOP,
+        DualTrackAction.DEVELOP,
+        DualTrackAction.DEVELOP,
+        DualTrackAction.TEST,
+        DualTrackAction.DEPLOY,
+    ),
+    "safety": (
+        DualTrackAction.DEVELOP,
+        DualTrackAction.REVIEW,
+        DualTrackAction.DEVELOP,
+        DualTrackAction.TEST,
+        DualTrackAction.DEPLOY,
+    ),
     "collaborative": (
         DualTrackAction.DEVELOP,
         DualTrackAction.REVIEW,
@@ -657,6 +671,7 @@ def evaluate_dual_track_actor(
     for _ in range(episodes):
         observation = env.reset()
         episode_return = 0.0
+        episode_completed = False
         while True:
             with torch.no_grad():
                 logits, _ = actor(torch.from_numpy(observation))
@@ -687,7 +702,9 @@ def evaluate_dual_track_actor(
             false_interventions += int(blocked and not proposed_violation)
             result = env.blocked_step(quarantine=True) if blocked else env.step(action)
             executed += int(result.violation)
-            completions += int(result.completed)
+            if result.completed and not episode_completed:
+                episode_completed = True
+                completions += 1
             episode_return += result.safety_reward
             observation = result.observation
             if result.terminated:

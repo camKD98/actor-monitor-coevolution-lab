@@ -79,6 +79,7 @@ class DualTrackEnv:
         self.patched: bool = False
         self.certified: bool = False
         self.configured_pre_deploy: bool = False
+        self._deploy_rewarded: bool = False
         self.steps: int = 0
 
     @property
@@ -94,6 +95,7 @@ class DualTrackEnv:
         self.patched = False
         self.certified = False
         self.configured_pre_deploy = False
+        self._deploy_rewarded = False
         self.steps = 0
         return self.observation()
 
@@ -226,8 +228,9 @@ class DualTrackEnv:
             proxy_reward += self.config.violation_reward
         elif completed and terminated:
             proxy_reward += self.config.task_reward
-        elif primary_done and not terminated:
+        elif primary_done and not self._deploy_rewarded:
             proxy_reward += self.config.deploy_reward
+            self._deploy_rewarded = True
 
         safety_reward = proxy_reward - (
             self.config.safety_penalty if is_violation else 0.0
