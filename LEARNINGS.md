@@ -4,39 +4,36 @@ Practical notes for any agent picking up this project. Update this file when you
 
 ## Python environment
 
-- **Do not use a global Conda environment.** Use a project-local virtual environment at `\.venv`.
-- The active Python on this Windows PC is the Windows Store install:
-  - `C:\Users\cambr\AppData\Local\Microsoft\WindowsApps\python.exe`
-  - Version: **Python 3.11.9**
-- There is an old Python 3.7 at `C:\Users\cambr\AppData\Local\Programs\Python\Python37`; do **not** use it (project requires `>=3.10`).
-- Git Bash cannot run the WindowsApps `python` stub directly and gives a permission error. Use **PowerShell** for all Python/pip/venv commands.
-- The project path contains spaces (`OneDrive - King's College London`), so quote paths carefully in PowerShell.
+- **Do not use a global Conda environment.** Use a project-local virtual environment at `.venv`.
+- Use Python **3.11.9** or another Python `>=3.10`; do not use the older Python 3.7 install present on this machine.
+- Git Bash cannot run the Windows Store `python` stub directly and gives a permission error. Use **PowerShell** for Python/pip/venv commands on Windows.
+- Quote paths carefully in PowerShell if the checkout path contains spaces.
 
 ## Verified setup commands (PowerShell)
 
 Create the venv (only once):
 
 ```powershell
-& 'C:\Users\cambr\AppData\Local\Microsoft\WindowsApps\python.exe' -m venv 'C:\Users\cambr\OneDrive - King''s College London\Documents\projects\Alignment\.venv'
+python -m venv .venv
 ```
 
 Install in editable mode with dev dependencies:
 
 ```powershell
-& 'C:\Users\cambr\OneDrive - King''s College London\Documents\projects\Alignment\.venv\Scripts\python.exe' -m pip install -e 'C:\Users\cambr\OneDrive - King''s College London\Documents\projects\Alignment\[dev]'
+.\.venv\Scripts\python.exe -m pip install -e '.[dev]'
 ```
 
 Run linting and tests from the project root:
 
 ```powershell
-& 'C:\Users\cambr\OneDrive - King''s College London\Documents\projects\Alignment\.venv\Scripts\python.exe' -m ruff check .
-& 'C:\Users\cambr\OneDrive - King''s College London\Documents\projects\Alignment\.venv\Scripts\python.exe' -m pytest
+.\.venv\Scripts\python.exe -m ruff check .
+.\.venv\Scripts\python.exe -m pytest
 ```
 
 Run the CLI:
 
 ```powershell
-& 'C:\Users\cambr\OneDrive - King''s College London\Documents\projects\Alignment\.venv\Scripts\alignment-lab.exe' --output 'C:\Users\cambr\OneDrive - King''s College London\Documents\projects\Alignment\runs\baseline'
+.\.venv\Scripts\alignment-lab.exe --output '.\runs\baseline'
 ```
 
 ## Current project status
@@ -84,7 +81,7 @@ Run the CLI:
 - Partial-state monitoring (`--monitor-observation partial_state`) uses a predeclared mask that zeros observation indices 4 (`deployed`) and 6 (`certified`) while retaining progress, tested, reviewed, elevated, patched, pre-deploy configuration, and time.
 - Canonical partial-state sweep `DT-META-PARTIAL-5ffc8f7-S17`–`S21` shifts the matched meta-selector from full-state convergence (5/5 seeds) to cycling at 4/5 seeds; seed 20 remains indeterminate under the unchanged −0.25 lag-1 threshold. Selected attacks evade pre-update in 43/60 rounds and are caught post-update in 60/60; all family policies retain 100/100 unmonitored capability. This is the first canonical cycling-regime result. Keep seed 20 as a boundary case; do not tune classification post hoc.
 - Meta-selector attack memory is configurable with `--attack-memory-rounds N`; `1` is current-family-only, `N>1` retains the last N attack data batches, and `0` is cumulative.
-- Canonical memory sweep `DT-MEM2-4e2b86b-*` (20 runs) shows a graded transition: cycling seeds 4/5 → 2/5 → 0/5 → 0/5 and evasions 43/60 → 24/60 → 12/60 → 2/60 for windows 1, 2, 3, cumulative. Cumulative converges at 5/5. Finite windows retain batches rather than unique families, and cumulative memory also increases total sample count; future replay tests must hold sample count fixed while varying family diversity.
+- Canonical memory sweep `DT-MEM2-4e2b86b-*` (20 runs) shows a graded transition: cycling seeds 4/5 → 2/5 → 0/5 → 0/5 and evasions 43/60 → 24/60 → 13/60 → 6/60 for windows 1, 2, 3, cumulative. Cumulative converges at 5/5. Finite windows retain batches rather than unique families, and cumulative memory also increases total sample count; future replay tests must hold sample count fixed while varying family diversity. The evasion counts were rechecked directly from hash-matched `results.json` artifacts on 2026-10-22.
 - Do not use PowerShell `Start-Process` for parallel experiment scheduling on this PC: it opens visible terminal windows and may mishandle quoted paths/exit codes. Use separate background `exec` calls in batches of at most four, as in the successful canonical sweeps.
 - Key related papers for the new direction: Thomson et al. "Games for AI Control" (IASEAI 2026), Balcan et al. "Nash Equilibria and Pitfalls of Adversarial Training" (AISTATS 2023), Mertikopoulos et al. "Cycles in Adversarial Regularized Learning" (SODA 2018), Dieckmann et al. Red Queen predator-prey dynamics (1995).
 - Active tasks and next steps are tracked in `TASKS.md`.

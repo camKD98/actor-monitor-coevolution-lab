@@ -52,17 +52,33 @@ The scientific claim is deliberately narrower than “policing solves alignment�
 
 ## Current files
 
-- `README.md` — overview; setup section still needs completion.
-- `docs/research_agenda.md` — completed initial literature map and research questions.
+- `README.md` — public-facing project overview and canonical result summary.
+- `docs/research_agenda.md` — hypotheses, literature map, threat model, metrics, and limitations.
+- `docs/formal_analysis.md` — game-theoretic model and regime predictions.
+- `docs/experiment_log.md` — canonical run ledger with commands, commits, artifact hashes, and results.
+- `docs/canonical_meta_summary.md` — generated meta-selector summary table.
+- `docs/figures/meta_selector_summary.svg` — generated canonical regime/evasion figure.
+- `docs/report.md` — compact report based on canonical runs.
 - `pyproject.toml` — package/dependency configuration.
 - `src/alignment/config.py` — experiment configuration.
-- `src/alignment/env.py` — gridworld and hidden evaluation oracle.
+- `src/alignment/env.py` — baseline gridworld and hidden evaluation oracle.
+- `src/alignment/contextual_env.py` — contextual-escalation environment.
+- `src/alignment/dual_track_env.py` — dual-track environment and observation model.
 - `src/alignment/models.py` — actor-critic and monitor networks.
 - `src/alignment/train_agent.py` — REINFORCE-style actor-critic training.
 - `src/alignment/train_monitor.py` — data collection and supervised monitor training.
 - `src/alignment/evaluate.py` — monitor controls and aggregate metrics.
-- `src/alignment/cli.py` — baseline experiment and artifact output.
-- `tests/` — environment, monitor, and smoke tests.
+- `src/alignment/contextual_experiment.py` — contextual experiment pipeline.
+- `src/alignment/dual_track_experiment.py` — dual-track experiment pipeline.
+- `src/alignment/alternating.py` — alternating actor-monitor coevolution.
+- `src/alignment/rotating.py` — sequential attack-family rotation.
+- `src/alignment/meta_selector.py` — fixed-policy best-response family selection and memory sweeps.
+- `src/alignment/regimes.py` — predeclared convergence/cycling/escape classification.
+- `src/alignment/provenance.py` — run metadata capture.
+- `src/alignment/cli.py` — experiment entry point and artifact output.
+- `scripts/summarize_meta_selector.py` — canonical meta-selector summary generator.
+- `scripts/make_canonical_figure.py` — canonical meta-selector SVG generator.
+- `tests/` — environment, monitor, alternating, regime, and smoke tests.
 
 ## Completed verification
 
@@ -133,7 +149,8 @@ Develop the game-theoretic formalization alongside the empirical work.
 
 - [ ] Recursive oversight extension (only after dynamics characterization).
 - [ ] Language-model transfer (only if formal analysis produces testable predictions at scale).
-- [ ] Add regenerated plots/tables and a report.
+- [ ] Add generated summary figures/tables for the report.
+- [ ] Add optional citation file after the public URL and author details are decided.
 
 ## Contextual-escalation experiment
 

@@ -41,10 +41,11 @@ This is the committed ledger for claim-relevant experiments. Raw artifacts remai
 - **Key quantitative results:**
   - **Window 1:** cycling at 4/5 seeds (S17, S18, S19, S21), S20 indeterminate; 43/60 selected-family pre-update evasions; 55/55 selection switches.
   - **Window 2:** cycling at 2/5 (S18, S21), convergence at 2/5 (S17, S19), S20 indeterminate; 24/60 evasions; 54/55 switches.
-  - **Window 3:** cycling at 0/5, convergence at 1/5 (S19), indeterminate at 4/5; 12/60 evasions; 44/55 switches.
-  - **Cumulative:** convergence at 5/5 seeds; 2/60 evasions (both S18); 24/55 switches.
+  - **Window 3:** cycling at 0/5, convergence at 1/5 (S19), indeterminate at 4/5; 13/60 evasions; 44/55 switches.
+  - **Cumulative:** convergence at 5/5 seeds; 6/60 evasions; 24/55 switches.
   - Monitor retraining catches the selected family after all 240/240 updates across all memory conditions. Attack capability remains fixed by construction.
-- **Supports:** attack memory is a strong structural predictor of regime. Increasing retained attack history monotonically reduces evasion (43 → 24 → 12 → 2 of 60), eliminates classified cycling by window 3, and yields convergence at every seed with cumulative memory. This matches the prediction that broader coverage/history lowers effective actor advantage and suppresses Red-Queen dynamics.
+- **Correction note (2026-10-22):** the Window 3 and cumulative evasion counts above were rechecked directly from the hash-matched `results.json` artifacts; an earlier version of this entry reported 12/60 and 2/60.
+- **Supports:** attack memory is a strong structural predictor of regime. Increasing retained attack history monotonically reduces evasion (43 → 24 → 13 → 6 of 60), eliminates classified cycling by window 3, and yields convergence at every seed with cumulative memory. This matches the prediction that broader coverage/history lowers effective actor advantage and suppresses Red-Queen dynamics.
 - **Does not support:** a sharp universal phase boundary at a particular finite window. Intermediate windows produce mixed and indeterminate seed-level regimes; window 3 is not uniformly classified as convergence within 12 rounds.
 - **Confounders and limitations:** retained units are data batches, not guaranteed unique families; repeated selector choices can fill a finite window with one family. Cumulative datasets grow each round while finite windows remain bounded, changing both diversity and sample count. The selector is white-box, attacks are fixed, and only five adjacent seeds are tested.
 - **Decision:** treat memory as a graded regime-control parameter rather than a binary switch. Next separate diversity from sample count (balanced per-family replay with fixed total examples) and test adaptation-rate asymmetry without changing memory coverage.
@@ -415,7 +416,7 @@ This is the committed ledger for claim-relevant experiments. Raw artifacts remai
 - **Code commit:** `0973b708bd461d06e7317e10eeab7fcb078fa2b7`.
 - **Tracked tree:** clean (`tracked_tree_dirty=false`); untracked editor configuration was present but does not affect code.
 - **Timestamp:** `2026-09-24T16:03:46.322813+00:00`.
-- **Working directory:** `C:\Users\cambr\OneDrive - King's College London\Documents\projects\Alignment`.
+- **Working directory:** `<repo-root>`.
 - **Command:**
 
 ```powershell

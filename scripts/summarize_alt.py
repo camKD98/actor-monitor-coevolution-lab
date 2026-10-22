@@ -2,7 +2,7 @@ import glob
 import json
 import sys
 
-root = sys.argv[1] if len(sys.argv) > 1 else r"C:\Users\cambr\OneDrive - King's College London\Documents\projects\Alignment\runs"
+root = sys.argv[1] if len(sys.argv) > 1 else "runs"
 for path in sorted(glob.glob(root + r"\DT-ALT-S*\results.json")):
     with open(path) as f:
         r = json.load(f)

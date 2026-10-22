@@ -11,3 +11,6 @@ runs/
 checkpoints/
 .DS_Store
 .specstory/
+.vscode/
+docs/md_papers/
+docs/raw_papers/

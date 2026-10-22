@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1020" height="380" viewBox="0 0 1020 380" role="img" aria-label="Retaining more attack history reduced evasion">
+<rect width="1020" height="380" fill="#ffffff"/>
+<text x="40.0" y="38.0" font-size="22" text-anchor="start" fill="#212529">Retaining more attack history reduced evasion</text>
+<text x="40.0" y="62.0" font-size="13" text-anchor="start" fill="#212529">Partial-state monitor; 5 seeds × 12 rounds per memory condition</text>
+<text x="40.0" y="91.0" font-size="13" text-anchor="start" fill="#212529">Monitor retraining history</text>
+<text x="245.0" y="91.0" font-size="13" text-anchor="start" fill="#212529">Evasion rounds before retraining</text>
+<text x="625.0" y="91.0" font-size="13" text-anchor="start" fill="#212529">Seed outcomes</text>
+<line x1="245.0" y1="93" x2="245.0" y2="285" stroke="#dee2e6"/>
+<text x="245.0" y="303.0" font-size="11" text-anchor="middle" fill="#212529">0</text>
+<line x1="395.0" y1="93" x2="395.0" y2="285" stroke="#dee2e6"/>
+<text x="395.0" y="303.0" font-size="11" text-anchor="middle" fill="#212529">30</text>
+<line x1="545.0" y1="93" x2="545.0" y2="285" stroke="#dee2e6"/>
+<text x="545.0" y="303.0" font-size="11" text-anchor="middle" fill="#212529">60</text>
+<text x="40.0" y="124.0" font-size="12" text-anchor="start" fill="#212529">Current attack batch only</text>
+<rect x="245" y="105" width="215.0" height="24" fill="#1c7ed6"/>
+<text x="467.0" y="122.0" font-size="12" text-anchor="start" fill="#212529">43/60</text>
+<rect x="625.0" y="105" width="152.0" height="24" fill="#e67700"/>
+<text x="701.0" y="121.0" font-size="11" text-anchor="middle" fill="#ffffff">4</text>
+<rect x="777.0" y="105" width="38.0" height="24" fill="#868e96"/>
+<text x="796.0" y="121.0" font-size="11" text-anchor="middle" fill="#ffffff">1</text>
+<text x="40.0" y="169.0" font-size="12" text-anchor="start" fill="#212529">Last 2 attack batches</text>
+<rect x="245" y="150" width="120.0" height="24" fill="#1c7ed6"/>
+<text x="372.0" y="167.0" font-size="12" text-anchor="start" fill="#212529">24/60</text>
+<rect x="625.0" y="150" width="76.0" height="24" fill="#2b8a3e"/>
+<text x="663.0" y="166.0" font-size="11" text-anchor="middle" fill="#ffffff">2</text>
+<rect x="701.0" y="150" width="76.0" height="24" fill="#e67700"/>
+<text x="739.0" y="166.0" font-size="11" text-anchor="middle" fill="#ffffff">2</text>
+<rect x="777.0" y="150" width="38.0" height="24" fill="#868e96"/>
+<text x="796.0" y="166.0" font-size="11" text-anchor="middle" fill="#ffffff">1</text>
+<text x="40.0" y="214.0" font-size="12" text-anchor="start" fill="#212529">Last 3 attack batches</text>
+<rect x="245" y="195" width="65.0" height="24" fill="#1c7ed6"/>
+<text x="317.0" y="212.0" font-size="12" text-anchor="start" fill="#212529">13/60</text>
+<rect x="625.0" y="195" width="38.0" height="24" fill="#2b8a3e"/>
+<text x="644.0" y="211.0" font-size="11" text-anchor="middle" fill="#ffffff">1</text>
+<rect x="663.0" y="195" width="152.0" height="24" fill="#868e96"/>
+<text x="739.0" y="211.0" font-size="11" text-anchor="middle" fill="#ffffff">4</text>
+<text x="40.0" y="259.0" font-size="12" text-anchor="start" fill="#212529">All previous attack batches</text>
+<rect x="245" y="240" width="30.0" height="24" fill="#1c7ed6"/>
+<text x="282.0" y="257.0" font-size="12" text-anchor="start" fill="#212529">6/60</text>
+<rect x="625.0" y="240" width="190.0" height="24" fill="#2b8a3e"/>
+<text x="720.0" y="256.0" font-size="11" text-anchor="middle" fill="#ffffff">5</text>
+<rect x="625" y="322" width="12" height="12" fill="#2b8a3e"/>
+<text x="642.0" y="333.0" font-size="11" text-anchor="start" fill="#212529">convergence</text>
+<rect x="720" y="322" width="12" height="12" fill="#e67700"/>
+<text x="737.0" y="333.0" font-size="11" text-anchor="start" fill="#212529">cycling</text>
+<rect x="815" y="322" width="12" height="12" fill="#868e96"/>
+<text x="832.0" y="333.0" font-size="11" text-anchor="start" fill="#212529">indeterminate</text>
+<rect x="910" y="322" width="12" height="12" fill="#c92a2a"/>
+<text x="927.0" y="333.0" font-size="11" text-anchor="start" fill="#212529">escape</text>
+<text x="40.0" y="342.0" font-size="11" text-anchor="start" fill="#212529">All selected attack families were caught after monitor retraining in every round.</text>
+<text x="40.0" y="360.0" font-size="10" text-anchor="start" fill="#212529">Generated from canonical results.json artifacts by scripts/make_canonical_figure.py.</text>
+</svg>

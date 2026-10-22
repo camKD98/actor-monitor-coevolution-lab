@@ -47,7 +47,7 @@ Treat this repository as the basis of a future research paper. Any result used t
 ## Parallel experiment execution
 
 - Parallelize independent, relatively cheap experiment runs (especially separate random seeds) when they have no shared mutable outputs.
-- On this PC (AMD Ryzen 5 3600, 6 physical cores / 12 logical processors, 16 GB RAM), use at most **four concurrent experiment workers** by default. This preserves headroom for Windows and Devin while materially reducing sweep time.
+- On the primary development machine, use at most **four concurrent experiment workers** by default. This preserves headroom for Windows and Devin while materially reducing sweep time.
 - Give every worker a distinct output directory and log file. Never run concurrent workers against the same artifact directory.
 - Launch additional queued runs only when a worker slot becomes available, and verify each process exit code plus the presence and parseability of `results.json` before treating the batch as complete.
 - On Windows, do **not** schedule experiment workers with PowerShell `Start-Process`: it opens visible terminal windows and can mishandle quoted paths and exit codes. Launch separate background `exec` calls (`timeout: 0`) in batches of at most four instead.

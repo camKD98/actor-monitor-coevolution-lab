@@ -5,10 +5,19 @@ Living task tracker. Agents should update this file when they start, complete, o
 ## In progress
 
 - Canonical attack-memory sweep complete (20 runs). Increasing memory monotonically reduces
-  pre-update evasion: 43/60 (window 1), 24/60 (window 2), 12/60 (window 3), 2/60 (cumulative).
+  pre-update evasion: 43/60 (window 1), 24/60 (window 2), 13/60 (window 3), 6/60 (cumulative).
   Cycling falls from 4/5 to 2/5 to 0/5 seeds; cumulative memory converges at 5/5. Next: separate
   family diversity from sample count using balanced fixed-size replay, then test adaptation-rate
   asymmetry without changing coverage.
+
+## Next — Public release/application checklist
+
+- [ ] Make the GitHub repository public or publish `docs/report.md` at a stable accessible URL.
+- [x] Add MIT code license and CC BY 4.0 documentation license.
+- [ ] Optionally add a `CITATION.cff` or short citation block once the public URL and author name are decided.
+- [x] Add one generated summary table from canonical `results.json` artifacts (`docs/canonical_meta_summary.md`).
+- [x] Add one generated summary figure from canonical `results.json` artifacts (`docs/figures/meta_selector_summary.svg`).
+- [ ] Submit the AI Village application with the report/repo as the related-work link.
 
 ## Next — Coevolution dynamics (primary research direction)
 
@@ -46,6 +55,16 @@ Living task tracker. Agents should update this file when they start, complete, o
 - [ ] Explicit CUDA / device selection
 
 ## Completed
+
+- [x] Prepare public-facing artifact draft for the AI Village grant application.
+  - Repaired the current `meta_selector.py` source issue; Ruff and pytest pass (40 tests).
+  - Rewrote `README.md` around the canonical actor-monitor coevolution results.
+  - Added `docs/report.md`, a compact report based only on logged canonical runs.
+  - Added `scripts/summarize_meta_selector.py`, `scripts/make_canonical_figure.py`, `docs/canonical_meta_summary.md`, and `docs/figures/meta_selector_summary.svg`; this rechecked and corrected the Window 3/cumulative evasion counts against hash-matched artifacts.
+  - Ignored `.vscode/` and local paper-cache directories for public-release hygiene.
+  - Updated package metadata description.
+  - Added a concise AI-assistance/provenance note, generic setup commands, MIT code license, and CC BY 4.0 documentation license.
+  - Removed local checkout paths and unnecessary machine-identifying details from public docs/scripts.
 
 - [x] Formal game-theoretic analysis (B) — see `docs/formal_analysis.md`.
   - Static actor-monitor game formalized as an extensive-form / POSG game with private actor type and partial monitor observation.
